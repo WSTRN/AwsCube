@@ -22,7 +22,7 @@ TARGET = AwsCube
 # debug build?
 DEBUG = 1
 # optimization
-OPT = -Og
+#OPT = -O1
 
 
 #######################################
@@ -37,6 +37,7 @@ BUILD_DIR = build
 # C++ sources
 CXX_SOURCES = \
 Src/freertos.cpp \
+$(wildcard Src/ssd1351/*.cpp)
 
 
 # C sources
@@ -77,6 +78,7 @@ Middlewares/Third_Party/FreeRTOS/Source/timers.c \
 Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c \
 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c \
 Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c \
+
 
 
 # ASM sources
@@ -129,7 +131,8 @@ C_DEFS =  \
 -DUSE_HAL_DRIVER \
 -DSTM32F411xE \
 -DARM_MATH_CM4 \
--D__VFP_FP__
+-D__VFP_FP__ \
+-DLV_CONF_INCLUDE_SIMPLE
 
 
 # AS includes
@@ -145,7 +148,11 @@ C_INCLUDES =  \
 -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS \
 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \
 -IDrivers/CMSIS/Device/ST/STM32F4xx/Include \
--IDrivers/CMSIS/Include
+-IDrivers/CMSIS/Include \
+-ISrc/lvgl \
+-ISrc/ssd1351 \
+-ISrc \
+
 
 
 # compile gcc flags
@@ -161,6 +168,14 @@ endif
 # Generate dependency information
 CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 
+#######################################
+# lvgl sources
+#######################################
+LVGL_DIR = Src
+LVGL_DIR_NAME = lvgl
+include Src/lvgl/lvgl.mk
+C_SOURCES += $(CSRCS)
+
 
 #######################################
 # LDFLAGS
@@ -171,7 +186,7 @@ LDSCRIPT = STM32F411CEUx_FLASH.ld
 # libraries
 LIBS = -lc -lm -lnosys -larm_cortexM4lf_math
 LIBDIR = -LDrivers/CMSIS/LIB/GCC
-LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
+LDFLAGS = $(MCU) -specs=nosys.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin

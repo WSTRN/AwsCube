@@ -26,7 +26,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "lvgl.h"
+#include "OLED_Driver.h"
+#include "OLED_GFX.h"
+#include "OLED_Animation.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -108,16 +111,18 @@ extern "C" void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
+  
   xTaskCreate((TaskFunction_t)StartDefaultTask,
               (const char*)"StartDaultTask",
-              (uint16_t)512,
+              (uint16_t)1024,
               (void*)NULL,
               (UBaseType_t)2,
               (TaskHandle_t*)&defaultTaskHandle);
   /* USER CODE END RTOS_THREADS */
 
 }
-
+OLED_GFX oled;
+OLED_Animation motion;
 /* USER CODE BEGIN Header_StartDefaultTask */
 /**
   * @brief  Function implementing the defaultTask thread.
@@ -129,9 +134,19 @@ void StartDefaultTask(void const * argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
+  oled.Device_Init();
+  motion.Motion_MindInit();
+  
   for(;;)
   {
-    osDelay(100);
+    oled.Clear_Screen();
+    oled.Fill_Rect(0,0,128,128,Black);
+		motion.Motion_Mind();
+    //clock.Draw();
+    //oled.Draw_bitmap(1,&bm101x,0,0);
+    //oled.Draw_bitmap(1,&bm11x,65,65);
+		oled.Refrash_Screen();//25ms
+    vTaskDelay(10);
   }
   /* USER CODE END StartDefaultTask */
 }
