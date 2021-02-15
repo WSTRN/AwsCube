@@ -26,7 +26,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "ui.hpp"
+#include "DisplayBasic.hpp"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -131,7 +131,7 @@ void StartDefaultTask(void const * argument)
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
   taskENTER_CRITICAL();
-  uitask_init();
+  lvgl_ui_init();
   vTaskDelete(NULL);
   taskEXIT_CRITICAL();
   /* USER CODE END StartDefaultTask */

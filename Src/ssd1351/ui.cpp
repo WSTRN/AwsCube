@@ -1,38 +1,22 @@
-#include "ui.hpp"
+#include "DisplayBasic.hpp"
 #include "lvgl.h"
 
 
 static TaskHandle_t uiloopTaskHandle = NULL;
 static TaskHandle_t TransloopTaskHandle = NULL;
 
-static lv_disp_buf_t disp_buf;
-static lv_color_t buf1[LV_HOR_RES_MAX * 10];
-static lv_color_t buf2[LV_HOR_RES_MAX * 10];
-void flush_callback(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p);
 
 
 void UILoopTask(void const * argument)
 {
-    lv_init();
-    lv_disp_buf_init(&disp_buf, buf1, buf2, LV_HOR_RES_MAX * 10);
-    lv_disp_drv_t disp_drv;
-    lv_disp_drv_init(&disp_drv);
-    disp_drv.hor_res = 128;
-    disp_drv.ver_res = 128;
-    disp_drv.flush_cb = flush_callback;
-    disp_drv.buffer = &disp_buf;
-    lv_disp_t * disp;
-    disp = lv_disp_drv_register(&disp_drv);
-    //lv_theme_set_current(lv_theme_night_init(200, NULL));
-
-    lv_disp_set_bg_color(disp,lv_color_hex(0xff0000));
-    //lv_disp_set_bg_opa(disp, 0);
-    lv_obj_t * label;
-    lv_obj_t * btn1 = lv_btn_create(lv_scr_act(), NULL);
-    //lv_obj_set_event_cb(btn1, NULL);
-    lv_obj_align(btn1, NULL, LV_ALIGN_CENTER, 0, -40);
-    label = lv_label_create(btn1, NULL);
-    lv_label_set_text(label, "Button");
+    lvgl_port_init();
+    
+    lv_obj_t * bar1 = lv_bar_create(lv_scr_act(), NULL);
+    lv_obj_set_size(bar1, 200, 20);
+    lv_obj_align(bar1, NULL, LV_ALIGN_CENTER, 0, 0);
+    lv_bar_set_anim_time(bar1, 2000);
+    lv_bar_set_value(bar1, 100, LV_ANIM_ON);
+    //AppWindow_Create();
     
 
     for(;;)
@@ -57,9 +41,13 @@ void TransLoopTask(void const * argument)
     }
 }
 
-void uitask_init()
+void lvgl_ui_init()
 {
     oled_drv_init();
+   
+    // OLED_GRAM[25][50] = 0x07;
+    // OLED_GRAM[25][51] = 0xe0;
+     
     xTaskCreate((TaskFunction_t)UILoopTask,
                 (const char*)"UILoopTask",
                 (uint16_t)512,
@@ -74,19 +62,6 @@ void uitask_init()
                 (TaskHandle_t*)&TransloopTaskHandle);
 }
 
-
-void flush_callback(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p)
-{
-    uint16_t(* ram)[128]=(uint16_t(*)[128])OLED_GRAM;
-    uint16_t x, y;
-    for(y = area->y1; y <= area->y2; y++) {
-        for(x = area->x1; x <= area->x2; x++) {
-            ram[y][x]=color_p->full;//put_px(x, y, *color_p)
-            color_p++;
-        }
-    }
-    lv_disp_flush_ready(disp_drv);
-}
 
 extern "C" void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
 {
