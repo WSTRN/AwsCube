@@ -353,7 +353,7 @@ uint16_t _lv_style_get_mem_size(const lv_style_t * style)
  * @param prop a style property ORed with a state.
  * E.g. `LV_STYLE_BORDER_WIDTH | (LV_STATE_PRESSED << LV_STYLE_STATE_POS)`
  * @param value the value to set
- * @note shouldn't be used directly. Use the specific property set functions instead.
+ * @note shouldn't be used directly. Use the specyd ific property set functions instead.
  *       For example: `lv_style_set_border_width()`
  * @note for performance reasons it's not checked if the property really has integer type
  */

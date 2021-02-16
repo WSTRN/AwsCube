@@ -6,32 +6,35 @@
 #include "stm32f4xx_hal.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "PageManager.h"
 
-#define OLED_RES_GPIO_PORT      (GPIOB)				//RES#引脚
-#define OLED_RES_GPIO_PINS      (RES_Pin)
-
-#define OLED_DC_GPIO_PORT       (GPIOB)				//D/C#引脚
-#define OLED_DC_GPIO_PINS       (DC_Pin)
-
-#define OLED_CS_GPIO_PORT      	(GPIOA)				//CS#引脚
-#define OLED_CS_GPIO_PINS      	(CS_Pin)
-
-#define OLED_RES_Set()          HAL_GPIO_WritePin(OLED_RES_GPIO_PORT, OLED_RES_GPIO_PINS, GPIO_PIN_SET)
-#define OLED_RES_Clr()          HAL_GPIO_WritePin(OLED_RES_GPIO_PORT, OLED_RES_GPIO_PINS, GPIO_PIN_RESET)
-
-#define OLED_DC_Set()           HAL_GPIO_WritePin(OLED_DC_GPIO_PORT, OLED_DC_GPIO_PINS, GPIO_PIN_SET)
-#define OLED_DC_Clr()           HAL_GPIO_WritePin(OLED_DC_GPIO_PORT, OLED_DC_GPIO_PINS, GPIO_PIN_RESET)
-
-#define	SPI_NSS_HIGH()					HAL_GPIO_WritePin(OLED_CS_GPIO_PORT, OLED_CS_GPIO_PINS, GPIO_PIN_SET)
-#define	SPI_NSS_LOW()						HAL_GPIO_WritePin(OLED_CS_GPIO_PORT, OLED_CS_GPIO_PINS, GPIO_PIN_RESET)
-
+typedef enum
+{
+    /*保留*/
+    PAGE_NONE,
+    /*用户页面*/
+    PAGE_MainClock,
+    //PAGE_MainMenu,
+    //PAGE_TimeCfg,
+    //PAGE_Backlight,
+    //PAGE_StopWatch,
+    //PAGE_Altitude,
+    //PAGE_About,
+    //PAGE_Game,
+    /*保留*/
+    PAGE_MAX
+} Page_Type;
 
 static uint8_t OLED_GRAM[128][256];
+static TaskHandle_t uiloopTaskHandle = NULL;
+static TaskHandle_t TransloopTaskHandle = NULL;
+extern PageManager page;
 
 void lvgl_ui_init();
 void lvgl_port_init();
 /*AppWindow*/
 void AppWindow_Create();
+void Pages_Init();
 lv_obj_t * AppWindow_GetCont(uint8_t pageID);
 lv_coord_t AppWindow_GetHeight();
 lv_coord_t AppWindow_GetWidth();
@@ -40,25 +43,7 @@ lv_coord_t AppWindow_GetWidth();
 
 
 
-#include "PageManager.h"
-typedef enum
-{
-    /*保留*/
-    PAGE_NONE,
-    /*用户页面*/
-    PAGE_DialPlate,
-    PAGE_MainMenu,
-    PAGE_TimeCfg,
-    PAGE_Backlight,
-    PAGE_StopWatch,
-    PAGE_Altitude,
-    PAGE_About,
-    PAGE_Game,
-    /*保留*/
-    PAGE_MAX
-} Page_Type;
-
-// extern PageManager page;
+extern PageManager page;
 // void PageDelay(uint32_t ms);
 #define PageWaitUntil(condition)\
 while(!(condition)){\
@@ -100,6 +85,23 @@ do{\
 
 
 
+#define OLED_RES_GPIO_PORT      (GPIOB)				//RES#引脚
+#define OLED_RES_GPIO_PINS      (RES_Pin)
+
+#define OLED_DC_GPIO_PORT       (GPIOB)				//D/C#引脚
+#define OLED_DC_GPIO_PINS       (DC_Pin)
+
+#define OLED_CS_GPIO_PORT      	(GPIOA)				//CS#引脚
+#define OLED_CS_GPIO_PINS      	(CS_Pin)
+
+#define OLED_RES_Set()          HAL_GPIO_WritePin(OLED_RES_GPIO_PORT, OLED_RES_GPIO_PINS, GPIO_PIN_SET)
+#define OLED_RES_Clr()          HAL_GPIO_WritePin(OLED_RES_GPIO_PORT, OLED_RES_GPIO_PINS, GPIO_PIN_RESET)
+
+#define OLED_DC_Set()           HAL_GPIO_WritePin(OLED_DC_GPIO_PORT, OLED_DC_GPIO_PINS, GPIO_PIN_SET)
+#define OLED_DC_Clr()           HAL_GPIO_WritePin(OLED_DC_GPIO_PORT, OLED_DC_GPIO_PINS, GPIO_PIN_RESET)
+
+#define	SPI_NSS_HIGH()					HAL_GPIO_WritePin(OLED_CS_GPIO_PORT, OLED_CS_GPIO_PINS, GPIO_PIN_SET)
+#define	SPI_NSS_LOW()						HAL_GPIO_WritePin(OLED_CS_GPIO_PORT, OLED_CS_GPIO_PINS, GPIO_PIN_RESET)
 
 static void Write_Command(uint8_t cmd)  {
   OLED_DC_Clr();  //DC拉低，发送命令

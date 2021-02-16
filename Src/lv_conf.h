@@ -53,7 +53,7 @@
 /* Dot Per Inch: used to initialize default sizes.
  * E.g. a button with width = LV_DPI / 2 -> half inch wide
  * (Not so important, you can adjust it to modify default sizes and spaces)*/
-#define LV_DPI              50     /*[px]*/
+#define LV_DPI              60     /*[px]*/
 
 /* The the real width of the display changes some default values:
  * default object sizes, layout of examples, etc.
@@ -380,7 +380,7 @@ typedef void * lv_indev_drv_user_data_t;            /*Type of user data in the i
  * https://fonts.google.com/specimen/Montserrat  */
 #define LV_FONT_MONTSERRAT_8     0
 #define LV_FONT_MONTSERRAT_10    1
-#define LV_FONT_MONTSERRAT_12    0
+#define LV_FONT_MONTSERRAT_12    1
 #define LV_FONT_MONTSERRAT_14    1
 #define LV_FONT_MONTSERRAT_16    0
 #define LV_FONT_MONTSERRAT_18    0
@@ -474,14 +474,14 @@ typedef void * lv_font_user_data_t;
 //#define LV_USE_THEME_DARK        1
 
 #define LV_THEME_DEFAULT_INCLUDE            <stdint.h>      /*Include a header for the init. function*/
-#define LV_THEME_DEFAULT_INIT               lv_theme_material_init
+#define LV_THEME_DEFAULT_INIT               lv_theme_mono_init
 #define LV_THEME_DEFAULT_COLOR_PRIMARY      lv_color_hex(0xff0000)//01a2b1
 #define LV_THEME_DEFAULT_COLOR_SECONDARY    lv_color_hex(0x44d1b6)
-#define LV_THEME_DEFAULT_FLAG               LV_THEME_MATERIAL_FLAG_DARK
-#define LV_THEME_DEFAULT_FONT_SMALL         &lv_font_montserrat_10
-#define LV_THEME_DEFAULT_FONT_NORMAL        &lv_font_montserrat_10
-#define LV_THEME_DEFAULT_FONT_SUBTITLE      &lv_font_montserrat_10
-#define LV_THEME_DEFAULT_FONT_TITLE         &lv_font_montserrat_10
+#define LV_THEME_DEFAULT_FLAG               0//LV_THEME_MATERIAL_FLAG_LIGHT
+#define LV_THEME_DEFAULT_FONT_SMALL         &lv_font_montserrat_12
+#define LV_THEME_DEFAULT_FONT_NORMAL        &lv_font_montserrat_12
+#define LV_THEME_DEFAULT_FONT_SUBTITLE      &lv_font_montserrat_12
+#define LV_THEME_DEFAULT_FONT_TITLE         &lv_font_montserrat_12
 
 /*=================
  *  Text settings

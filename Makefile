@@ -22,7 +22,7 @@ TARGET = AwsCube
 # debug build?
 DEBUG = 1
 # optimization
-OPT = -O3
+#OPT = -O1
 
 
 #######################################
@@ -37,7 +37,8 @@ BUILD_DIR = build
 # C++ sources
 CXX_SOURCES = \
 Src/freertos.cpp \
-$(wildcard Src/ssd1351/*.cpp)
+$(wildcard Src/ssd1351/*.cpp) \
+
 
 
 # C sources
@@ -78,7 +79,7 @@ Middlewares/Third_Party/FreeRTOS/Source/timers.c \
 Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c \
 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c \
 Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c \
-
+$(wildcard Src/ssd1351/*.c)
 
 
 # ASM sources
