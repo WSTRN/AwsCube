@@ -35,10 +35,10 @@ void AppWindow_Create()
         lv_style_set_border_color(&appWindow_Grp[i].style, LV_STATE_DEFAULT, LV_COLOR_BLACK);
 
         appWindow_Grp[i].cont = lv_cont_create(lv_scr_act(), NULL);
-        lv_obj_set_auto_realign(appWindow_Grp[i].cont, true);                    /*Auto realign when the size changes*/
-        lv_obj_align_origo(appWindow_Grp[i].cont, NULL, LV_ALIGN_CENTER, 0, 0);  /*This parametrs will be sued when realigned*/
-        lv_cont_set_fit(appWindow_Grp[i].cont, LV_FIT_TIGHT);
-        lv_cont_set_layout(appWindow_Grp[i].cont, LV_LAYOUT_COLUMN_MID);
+        //lv_obj_set_auto_realign(appWindow_Grp[i].cont, true);                    /*Auto realign when the size changes*/
+        //lv_obj_align_origo(appWindow_Grp[i].cont, NULL, LV_ALIGN_CENTER, 0, 0);  /*This parametrs will be sued when realigned*/
+        //lv_cont_set_fit(appWindow_Grp[i].cont, LV_FIT_TIGHT);
+        //lv_cont_set_layout(appWindow_Grp[i].cont, LV_LAYOUT_COLUMN_MID);
         lv_obj_set_size(appWindow_Grp[i].cont, AppWindow_GetWidth(), AppWindow_GetHeight());
         
         lv_obj_add_style(appWindow_Grp[i].cont,LV_OBJ_PART_MAIN,&appWindow_Grp[i].style); 

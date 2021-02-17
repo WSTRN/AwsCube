@@ -1,11 +1,12 @@
 #include "DisplayBasic.hpp"
 #include "CommonMacro.h"
 #include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_rtc.h"
 
 /*RTC时间*/
-//RTC_TimeTypeDef RTC_Time;
+static RTC_TimeTypeDef RTC_Time;
 //static RTC_TimeTypeDef RTC_TimeLast;
-//static RTC_DateTypeDef RTC_Date;
+static RTC_DateTypeDef RTC_Date;
 
 /*此页面窗口*/
 static lv_obj_t * appWindow;
@@ -53,7 +54,8 @@ static void ImgBg_Create()
     LV_IMG_DECLARE(imgMainClockBG);
     MainClockBG = lv_img_create(appWindow, NULL);
     lv_img_set_src(MainClockBG, &imgMainClockBG);
-    //lv_obj_align(imgWx, NULL, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_pos(MainClockBG,0,0);
+    //lv_obj_align(MainClockBG, NULL, LV_ALIGN_CENTER, 0, 0);
 }
 
 // /**
@@ -223,27 +225,30 @@ static void ImgBg_Create()
 //     lv_label_set_text_fmt(labelDate, "%02d#FF0000 /#%02d %s", RTC_Date.RTC_Month, RTC_Date.RTC_Date, week_str[index]);
 // }
 
-// /**
-//   * @brief  创建日期标签
-//   * @param  无
-//   * @retval 无
-//   */
-// static void LabelDate_Create()
-// {
-//     LV_FONT_DECLARE(Morganite_36);
-//     labelDate = lv_label_create(appWindow, NULL);
+/**
+  * @brief  创建日期标签
+  * @param  无
+  * @retval 无
+  */
+static void LabelDate_Create()
+{
+    LV_FONT_DECLARE(Morganite_36);
+    labelDate = lv_label_create(MainClockBG, NULL);
     
-//     static lv_style_t bmp_style;
-//     bmp_style = *lv_label_get_style(labelDate, LV_LABEL_STYLE_MAIN);
-//     bmp_style.text.font = &Morganite_36;
-//     bmp_style.text.color = LV_COLOR_WHITE;
-//     lv_label_set_style(labelDate, LV_LABEL_STYLE_MAIN, &bmp_style);
-    
-//     lv_label_set_recolor(labelDate, true);
-//     lv_label_set_text(labelDate, "01#FF0000 /#01 MON");
-//     lv_obj_align(labelDate, NULL, LV_ALIGN_IN_TOP_MID, 0, 30);
-//     lv_obj_set_auto_realign(labelDate, true);
-// }
+    static lv_style_t labelDate_style;
+    // bmp_style = *lv_label_get_style(labelDate, LV_LABEL_STYLE_MAIN);
+    // bmp_style.text.font = &Morganite_36;
+    // bmp_style.text.color = LV_COLOR_WHITE;
+    //lv_label_set_style(labelDate, LV_LABEL_STYLE_MAIN, &bmp_style);
+    //lv_style_set_text_color(&bmp_style,LV_STATE_DEFAULT, LV_COLOR_WHITE);
+    lv_style_set_text_font(&labelDate_style,LV_STATE_DEFAULT,&Morganite_36);
+    lv_obj_add_style(labelDate,LV_LABEL_PART_MAIN,&labelDate_style);
+    lv_label_set_recolor(labelDate, true);
+    lv_label_set_text(labelDate, "01#FF0000 /#01 MON");
+    lv_obj_align(labelDate, NULL, LV_ALIGN_IN_TOP_MID, 0, 8);
+    //lv_obj_set_pos(labelDate,0,0);
+    lv_obj_set_auto_realign(labelDate, true);
+}
 
 // /**
 //   * @brief  创建时间标签
@@ -254,56 +259,72 @@ static void LabelTime_Create()
 {
     LabelDate_Create();
     
-    /*contTime*/
-    contTime = lv_cont_create(appWindow, NULL);
-    lv_cont_set_style(contTime, LV_CONT_STYLE_MAIN, &lv_style_transp);
-    lv_obj_set_size(contTime, 130, 80);
-    lv_obj_align(contTime, NULL, LV_ALIGN_CENTER, 0, 0);
+    // /*contTime*/
+    contTime = lv_cont_create(MainClockBG, NULL);
+    // //lv_cont_set_style(contTime, LV_CONT_STYLE_MAIN, &lv_style_transp);
+    static lv_style_t time_cont_style;
+    //lv_style_set_bg_color(&time_cont_style, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+    lv_style_set_bg_opa(&time_cont_style, LV_STATE_DEFAULT,LV_OPA_TRANSP);
+    //lv_style_set_border_color(&time_cont_style, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+    lv_style_set_border_opa(&time_cont_style, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+    lv_obj_add_style(contTime,LV_CONT_PART_MAIN,&time_cont_style);
+    lv_obj_set_size(contTime, 128, 80);
+    lv_obj_align(contTime, NULL, LV_ALIGN_CENTER, 0, 12);
     
-    /*ledSec*/
+    // /*ledSec*/
     static lv_style_t led_style;
-    led_style = lv_style_pretty_color;
-    led_style.body.main_color = LV_COLOR_RED;
-    led_style.body.grad_color = LV_COLOR_RED;
+    // // led_style = lv_style_pretty_color;
+    // // led_style.body.main_color = LV_COLOR_RED;
+    // // led_style.body.grad_color = LV_COLOR_RED;
+    lv_style_init(&led_style);
+    lv_style_set_bg_color(&led_style,LV_STATE_DEFAULT,LV_COLOR_RED);
+    lv_style_set_border_color(&led_style,LV_STATE_DEFAULT,LV_COLOR_RED);
+    
     for(int i = 0; i < __Sizeof(ledSec); i++)
     {
         lv_obj_t * led = lv_led_create(contTime, NULL);
-        lv_led_set_style(led, LV_LED_STYLE_MAIN, &led_style);
-        lv_obj_set_size(led, 8, 10);
+
+        lv_obj_add_style(led,LV_LED_PART_MAIN,&led_style);
+        //lv_led_set_style(led, LV_LED_STYLE_MAIN, &led_style);
+        lv_obj_set_size(led, 4, 6);
+        lv_led_set_bright(led,190);
         lv_obj_align(led, NULL, LV_ALIGN_CENTER, 0, i == 0 ? -10 : 10);
+        lv_led_on(led);
         ledSec[i] = led;
     }
     
-    /*labelTime*/
+    // /*labelTime*/
     LV_FONT_DECLARE(Morganite_100);
     static lv_style_t time_style;
-    time_style = lv_style_plain;
-    time_style.text.font = &Morganite_100;
-    time_style.text.color = LV_COLOR_WHITE;
-    const lv_coord_t x_mod[4] = {-45, -20, 20, 45};
+    // // time_style = lv_style_plain;
+    // // time_style.text.font = &Morganite_100;
+    // // time_style.text.color = LV_COLOR_WHITE;
+    lv_style_set_text_color(&time_style,LV_STATE_DEFAULT, LV_COLOR_WHITE);
+    lv_style_set_text_font(&time_style,LV_STATE_DEFAULT,&Morganite_100);
+    const lv_coord_t x_mod[4] = {-41, -16, 16, 41};
     for(int i = 0; i < __Sizeof(labelTime_Grp); i++)
     {
         lv_obj_t * label = lv_label_create(contTime, NULL);
-        lv_label_set_style(label, LV_LABEL_STYLE_MAIN, &time_style);
-        lv_label_set_text(label, "0");
+        lv_obj_add_style(label, LV_LABEL_PART_MAIN, &time_style);
+        lv_label_set_text(label, "6");
         lv_obj_align(label, NULL, LV_ALIGN_CENTER, x_mod[i], 0);
         labelTime_Grp[i] = label;
     }
-    for(int i = 0; i < __Sizeof(labelTime_Grp2); i++)
-    {
-        lv_obj_t * label = lv_label_create(contTime, NULL);
-        lv_label_set_style(label, LV_LABEL_STYLE_MAIN, &time_style);
-        lv_label_set_text(label, "0");
-        lv_obj_align(label, labelTime_Grp[i], LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
-        labelTime_Grp2[i] = label;
-    }
+    // for(int i = 0; i < __Sizeof(labelTime_Grp2); i++)
+    // {
+    //     lv_obj_t * label = lv_label_create(contTime, NULL);
+    //     //lv_label_set_style(label, LV_LABEL_STYLE_MAIN, &time_style);
+    //     lv_label_set_text(label, "0");
+    //     lv_obj_align(label, labelTime_Grp[i], LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
+    //     labelTime_Grp2[i] = label;
+    // }
 
     /*时间清零*/
-    memset(&RTC_TimeLast, 0, sizeof(RTC_TimeLast));
+    //memset(&RTC_TimeLast, 0, sizeof(RTC_TimeLast));
     
     /*注册时间标签更新任务，执行周期500ms*/
-    taskTimeUpdate = lv_task_create(Task_TimeUpdate, 500, LV_TASK_PRIO_MID, NULL);
-    Task_TimeUpdate(taskTimeUpdate);
+    //taskTimeUpdate = lv_task_create(Task_TimeUpdate, 500, LV_TASK_PRIO_MID, NULL);
+    //Task_TimeUpdate(taskTimeUpdate);
 }
 
 // /**
@@ -335,11 +356,11 @@ static void LabelTime_Create()
 //     lv_obj_set_auto_realign(labelStepCnt, true);
 // }
 
-/**
-  * @brief  页面初始化事件
-  * @param  无
-  * @retval 无
-  */
+// /**
+//   * @brief  页面初始化事件
+//   * @param  无
+//   * @retval 无
+//   */
 static void Setup()
 {
     /*将此页面移到前台*/
