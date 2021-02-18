@@ -428,6 +428,6 @@ void PageRegister_MainClock(uint8_t pageID)
     appWindow = AppWindow_GetCont(pageID);
  
     /*注册至页面调度器*/
-    page.PageRegister(pageID, Setup, NULL, Exit, Event);
+    page.PageRegister(pageID, Setup, Task_TimeUpdate, Exit, Event);
     
 }

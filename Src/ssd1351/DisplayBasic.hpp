@@ -25,7 +25,7 @@ typedef enum
     PAGE_MAX
 } Page_Type;
 
-static uint8_t OLED_GRAM[128][256];
+//static uint8_t OLED_GRAM[128][256];
 static TaskHandle_t uiloopTaskHandle = NULL;
 static TaskHandle_t TransloopTaskHandle = NULL;
 extern PageManager page;
@@ -120,31 +120,36 @@ static void Write_Data(uint8_t dat) {
   OLED_DC_Set(); //DC拉高，空闲时为高电平
   
 }
-static void RAM_Address(void)  {
-  
-  Write_Command(0x15);
-  Write_Data(0x00);
-  Write_Data(0x7f);
+static void RAM_Address(uint8_t start_column,uint8_t end_column,uint8_t start_row,uint8_t end_row)  
+{
+  static uint8_t cmd;
+  cmd=0x75;
+  OLED_DC_Clr();  //DC拉低，发送命令
+  HAL_SPI_Transmit(&hspi2, &cmd, 1, 10);
+  OLED_DC_Set();  //DC拉高，发送数据
+  HAL_SPI_Transmit(&hspi2, &start_column, 1, 10);
+  HAL_SPI_Transmit(&hspi2, &end_column, 1, 10);
+  cmd=0x15;
+  OLED_DC_Clr();  //DC拉低，发送命令
+  HAL_SPI_Transmit(&hspi2, &cmd, 1, 10);
+  OLED_DC_Set();  //DC拉高，发送数据
+  HAL_SPI_Transmit(&hspi2, &start_row, 1, 10);
+  HAL_SPI_Transmit(&hspi2, &end_row, 1, 10);
 
-  Write_Command(0x75);
-  Write_Data(0x00);
-  Write_Data(0x7f);
 }
-static void Clear_Screen()  {
-  
-  int i,j;
-  
-  for(i=0;i<128;i++)  {
-    for(j=0;j<128;j++)  {
-      OLED_GRAM[i][2*j] = 0x00;
-      OLED_GRAM[1][2*j+1] = 0x00;
-    }
-  }
-  
+static void DMA_Send_Pixel(uint16_t size,lv_color_t * color_p)
+{
+  static uint8_t cmd;
+  cmd=0x5c;
+  OLED_DC_Clr();  //DC拉低，发送命令
+  HAL_SPI_Transmit(&hspi2, &cmd, 1, 10);
+  OLED_DC_Set();  //DC拉高，发送数据
+  HAL_SPI_Transmit_DMA(&hspi2,(uint8_t*)color_p,size);
 }
+
 static void oled_drv_init()
 {
-     SPI_NSS_LOW();
+  SPI_NSS_LOW();
 	OLED_DC_Clr();
 
   OLED_RES_Clr();
@@ -217,8 +222,6 @@ static void oled_drv_init()
 
   Write_Command(0xA6);
 
-  Clear_Screen();
-  //Refrash_Screen();
   Write_Command(0xaf);	 //display on
   
 }

@@ -52,5 +52,4 @@ void AppWindow_Create()
         // lv_cont_set_style(appWindow_Grp[i].cont, LV_CONT_STYLE_MAIN, &appWindow_Grp[i].style);
     }
     
-    //lv_obj_align(imgwx, NULL, LV_ALIGN_CENTER, 0, 0);
 }

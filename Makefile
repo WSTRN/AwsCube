@@ -22,7 +22,7 @@ TARGET = AwsCube
 # debug build?
 DEBUG = 1
 # optimization
-#OPT = -O1
+OPT = -O3
 
 
 #######################################
