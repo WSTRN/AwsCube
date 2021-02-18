@@ -2,12 +2,14 @@
 #include "CommonMacro.h"
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_rtc.h"
+#include "SEGGER_RTT.h"
+#include <math.h>
 
 /*RTC时间*/
 static RTC_TimeTypeDef RTC_Time;
-//static RTC_TimeTypeDef RTC_TimeLast;
+static RTC_TimeTypeDef RTC_TimeLast;
 static RTC_DateTypeDef RTC_Date;
-
+extern RTC_HandleTypeDef hrtc;
 /*此页面窗口*/
 static lv_obj_t * appWindow;
 
@@ -31,7 +33,7 @@ static lv_obj_t * ledSec[2];
 
 /*时间标签1、2，交替使用实现上下滑动效果*/
 static lv_obj_t * labelTime_Grp[4];
-static lv_obj_t * labelTime_Grp2[4];
+//static lv_obj_t * labelTime_Grp2[4];
 
 /*运动图标*/
 static lv_obj_t * imgRun;
@@ -172,58 +174,64 @@ static void ImgBg_Create()
 //     }\
 // }while(0)
 
-// /**
-//   * @brief  时间标签更新
-//   * @param  无
-//   * @retval 无
-//   */
-// static void LabelTimeGrp_Update()
-// {
-//     /*获取RTC时间*/
-//     RTC_GetTime(RTC_Format_BIN, &RTC_Time);
-// //    RTC_Time.RTC_Hours = (millis() / (3600 * 1000)) % 100;
-// //    RTC_Time.RTC_Minutes = (millis() / (60 * 1000)) % 60;
-// //    RTC_Time.RTC_Seconds = (millis() / 1000) % 60;
-    
-// //    /*秒-个位*/
-// //    LABEL_TIME_CHECK_DEF(RTC_Time.RTC_Seconds % 10,RTC_TimeLast.RTC_Seconds % 10, 3);
-// //    /*秒-十位*/
-// //    LABEL_TIME_CHECK_DEF(RTC_Time.RTC_Seconds / 10,RTC_TimeLast.RTC_Seconds / 10, 2);
-    
-//     /*分-个位*/
-//     LABEL_TIME_CHECK_DEF(RTC_Time.RTC_Minutes % 10,RTC_TimeLast.RTC_Minutes % 10, 3);
-//     /*分-十位*/
-//     LABEL_TIME_CHECK_DEF(RTC_Time.RTC_Minutes / 10,RTC_TimeLast.RTC_Minutes / 10, 2);
-    
-//     /*时-个位*/
-//     LABEL_TIME_CHECK_DEF(RTC_Time.RTC_Hours % 10,RTC_TimeLast.RTC_Hours % 10, 1);
-//     /*时-十位*/
-//     LABEL_TIME_CHECK_DEF(RTC_Time.RTC_Hours / 10,RTC_TimeLast.RTC_Hours / 10, 0);
-    
-//     RTC_TimeLast = RTC_Time;
-// }
+/**
+  * @brief  时间标签更新
+  * @param  无
+  * @retval 无
+  */
+static void LabelTimeGrp_Update()
+{
+    /*获取RTC时间*/
+    // RTC_GetTime(RTC_Format_BIN, &RTC_Time);
+//    RTC_Time.RTC_Hours = (millis() / (3600 * 1000)) % 100;
+//    RTC_Time.RTC_Minutes = (millis() / (60 * 1000)) % 60;
+//    RTC_Time.RTC_Seconds = (millis() / 1000) % 60;
+    HAL_RTC_GetTime(&hrtc, &RTC_Time, RTC_FORMAT_BIN);
+    //SEGGER_RTT_printf(0,"%d \r\n",RTC_Time.Seconds);
 
-// /**
-//   * @brief  时间更新任务
-//   * @param  task:任务句柄
-//   * @retval 无
-//   */
-// static void Task_TimeUpdate(lv_task_t * task)
-// {
-//     /*时间标签状态更新*/
-//     LabelTimeGrp_Update();
+
+   /*秒-个位*/
+  //  LABEL_TIME_CHECK_DEF(RTC_Time.Seconds % 10,RTC_TimeLast.Seconds % 10, 3);
+  //  /*秒-十位*/
+  //  LABEL_TIME_CHECK_DEF(RTC_Time.Seconds / 10,RTC_TimeLast.Seconds / 10, 2);
+    lv_label_set_text_fmt(labelTime_Grp[3], "%1d", RTC_Time.Seconds % 10);
+    lv_label_set_text_fmt(labelTime_Grp[2], "%1d", RTC_Time.Seconds / 10);
     
-//     /*翻转LED状态*/
-//     lv_led_toggle(ledSec[0]);
-//     lv_led_toggle(ledSec[1]);
+    // /*分-个位*/
+    // LABEL_TIME_CHECK_DEF(RTC_Time.RTC_Minutes % 10,RTC_TimeLast.RTC_Minutes % 10, 3);
+    // /*分-十位*/
+    // LABEL_TIME_CHECK_DEF(RTC_Time.RTC_Minutes / 10,RTC_TimeLast.RTC_Minutes / 10, 2);
     
-//     /*日期*/
-//     RTC_GetDate(RTC_Format_BIN, &RTC_Date);
-//     const char* week_str[7] = { "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
-//     int8_t index = RTC_Date.RTC_WeekDay - 1;
-//     __LimitValue(index, 0, 6);
-//     lv_label_set_text_fmt(labelDate, "%02d#FF0000 /#%02d %s", RTC_Date.RTC_Month, RTC_Date.RTC_Date, week_str[index]);
-// }
+    // /*时-个位*/
+    // LABEL_TIME_CHECK_DEF(RTC_Time.Hours % 10,RTC_TimeLast.Hours % 10, 1);
+    // /*时-十位*/
+    // LABEL_TIME_CHECK_DEF(RTC_Time.Hours / 10,RTC_TimeLast.Hours / 10, 0);
+    lv_label_set_text_fmt(labelTime_Grp[1], "%d", RTC_Time.Minutes % 10);
+    lv_label_set_text_fmt(labelTime_Grp[0], "%d", RTC_Time.Minutes / 10);
+    RTC_TimeLast = RTC_Time;
+}
+
+/**
+  * @brief  时间更新任务
+  * @param  task:任务句柄
+  * @retval 无
+  */
+void Task_TimeUpdate()//(lv_task_t * task)
+{
+    /*时间标签状态更新*/
+    LabelTimeGrp_Update();
+    
+    /*翻转LED状态*/
+    lv_led_toggle(ledSec[0]);
+    lv_led_toggle(ledSec[1]);
+    
+    /*日期*/
+    HAL_RTC_GetDate(&hrtc, &RTC_Date, RTC_FORMAT_BIN);
+    const char* week_str[7] = { "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
+    int8_t index = RTC_Date.WeekDay - 1;
+    __LimitValue(index, 0, 6);
+    lv_label_set_text_fmt(labelDate, "%02d#FF0000 /#%02d %s", RTC_Date.Month, RTC_Date.Date, week_str[index]);
+}
 
 /**
   * @brief  创建日期标签
@@ -301,19 +309,20 @@ static void LabelTime_Create()
     // // time_style.text.color = LV_COLOR_WHITE;
     lv_style_set_text_color(&time_style,LV_STATE_DEFAULT, LV_COLOR_WHITE);
     lv_style_set_text_font(&time_style,LV_STATE_DEFAULT,&Morganite_100);
-    const lv_coord_t x_mod[4] = {-41, -16, 16, 41};
+    const lv_coord_t x_mod[4] = {-45, -20, 13, 38};
     for(int i = 0; i < __Sizeof(labelTime_Grp); i++)
     {
         lv_obj_t * label = lv_label_create(contTime, NULL);
         lv_obj_add_style(label, LV_LABEL_PART_MAIN, &time_style);
-        lv_label_set_text(label, "6");
+        lv_label_set_text(label, "1");
         lv_obj_align(label, NULL, LV_ALIGN_CENTER, x_mod[i], 0);
         labelTime_Grp[i] = label;
     }
+    //lv_label_set_text_fmt(labelTime_Grp[0],"%d",5);
     // for(int i = 0; i < __Sizeof(labelTime_Grp2); i++)
     // {
     //     lv_obj_t * label = lv_label_create(contTime, NULL);
-    //     //lv_label_set_style(label, LV_LABEL_STYLE_MAIN, &time_style);
+    //     lv_obj_add_style(label, LV_LABEL_PART_MAIN, &time_style);
     //     lv_label_set_text(label, "0");
     //     lv_obj_align(label, labelTime_Grp[i], LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
     //     labelTime_Grp2[i] = label;

@@ -82,7 +82,8 @@ Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c \
 Src/rtc.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.c \
-$(wildcard Src/ssd1351/*.c) 
+$(wildcard Src/ssd1351/*.c) \
+$(wildcard Src/RTT/*.c) 
 
 
 # ASM sources
@@ -155,7 +156,8 @@ C_INCLUDES =  \
 -IDrivers/CMSIS/Include \
 -ISrc/lvgl \
 -ISrc/ssd1351 \
--ISrc
+-ISrc/RTT \
+-ISrc 
 
 
 

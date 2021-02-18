@@ -47,7 +47,14 @@ void MX_RTC_Init(void)
   }
 
   /* USER CODE BEGIN Check_RTC_BKUP */
-
+  if(HAL_RTCEx_BKUPRead(&hrtc,RTC_BKP_DR1)==0x00f3234c)
+  {
+    return;
+  }
+  else
+  {
+    HAL_RTCEx_BKUPWrite(&hrtc,RTC_BKP_DR1,0x00f3234c);
+  }
   /* USER CODE END Check_RTC_BKUP */
 
   /** Initialize RTC and set the Time and Date

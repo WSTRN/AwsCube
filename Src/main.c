@@ -100,7 +100,7 @@ int main(void)
   MX_USB_OTG_FS_USB_Init();
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
-
+  
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
@@ -190,6 +190,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE END Callback 0 */
   if (htim->Instance == TIM11) {
     HAL_IncTick();
+    lv_tick_inc(1);
   }
   /* USER CODE BEGIN Callback 1 */
 

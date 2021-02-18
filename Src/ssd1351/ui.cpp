@@ -3,7 +3,7 @@
 
 
 
-
+void Task_TimeUpdate();
 void UILoopTask(void const * argument)
 {
     lvgl_port_init();
@@ -22,9 +22,10 @@ void UILoopTask(void const * argument)
     {
         //ulTaskNotifyTake(pdTRUE,portMAX_DELAY);
         page.Running();
+        Task_TimeUpdate();
         lv_task_handler(); /* let the GUI do its work */
         
-        vTaskDelay(1);
+        vTaskDelay(5);
     }
 }
 void TransLoopTask(void const * argument)
