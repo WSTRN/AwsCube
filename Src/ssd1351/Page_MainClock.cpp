@@ -33,7 +33,7 @@ static lv_obj_t * ledSec[2];
 
 /*时间标签1、2，交替使用实现上下滑动效果*/
 static lv_obj_t * labelTime_Grp[4];
-//static lv_obj_t * labelTime_Grp2[4];
+static lv_obj_t * labelTime_Grp2[4];
 
 /*运动图标*/
 static lv_obj_t * imgRun;
@@ -135,13 +135,13 @@ static void ImgBg_Create()
 //     Task_TopBarUpdate(taskTopBarUpdate);
 // }
 
-// /**
-//   * @brief  滑动改变时间标签
-//   * @param  val_now:当前值
-//   * @param  val_last:上一次的值
-//   * @param  index:标签索引
-//   * @retval 无
-//   */
+/**
+  * @brief  滑动改变时间标签
+  * @param  val_now:当前值
+  * @param  val_last:上一次的值
+  * @param  index:标签索引
+  * @retval 无
+  */
 // #define LABEL_TIME_CHECK_DEF(val_now,val_last,index)\
 // do{\
 //     /*当前值发生改变时*/\
@@ -174,6 +174,60 @@ static void ImgBg_Create()
 //     }\
 // }while(0)
 
+void Label_Slide_Change(uint8_t nowval,uint8_t lastval,int label_index)
+{
+  if(nowval != lastval)
+  {
+    static lv_anim_t anim_now;
+    lv_anim_init(&anim_now);
+    static lv_anim_t anim_next;
+    lv_anim_init(&anim_next);
+
+    lv_anim_path_t path;
+    lv_anim_path_init(&path);
+
+    lv_obj_t * next_label;
+    lv_obj_t * now_label;
+    /*判断两个标签的相对位置，确定谁是下一个标签*/
+    if(lv_obj_get_y(labelTime_Grp2[label_index]) > lv_obj_get_y(labelTime_Grp[label_index]))
+    {
+        now_label = labelTime_Grp2[label_index];
+        next_label = labelTime_Grp[label_index];
+    }
+    else
+    {
+        now_label = labelTime_Grp[label_index];
+        next_label = labelTime_Grp2[label_index];
+    }
+    
+    lv_label_set_text_fmt(now_label, "%d", lastval);
+    lv_label_set_text_fmt(next_label, "%d", nowval);
+    
+    //lv_obj_align(next_label, now_label, LV_ALIGN_OUT_TOP_MID, 0, -10);
+    /*计算需要的Y偏移量*/
+    lv_coord_t y_offset = abs(lv_obj_get_y(now_label) - lv_obj_get_y(next_label));
+    /*滑动动画*/
+    lv_obj_align(next_label, now_label, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
+    lv_anim_path_set_cb(&path, lv_anim_path_overshoot);
+
+    lv_anim_set_exec_cb(&anim_now,(lv_anim_exec_xcb_t) lv_obj_set_y);
+    lv_anim_set_var(&anim_now,now_label);
+    lv_anim_set_time(&anim_now,400);
+    lv_anim_set_values(&anim_now,lv_obj_get_y(now_label),lv_obj_get_y(now_label)-y_offset);
+    lv_anim_set_path(&anim_now,&path);
+
+    lv_anim_set_exec_cb(&anim_next,(lv_anim_exec_xcb_t) lv_obj_set_y);
+    lv_anim_set_var(&anim_next,next_label);
+    lv_anim_set_time(&anim_next,400);
+    lv_anim_set_values(&anim_next,lv_obj_get_y(next_label),lv_obj_get_y(next_label)-y_offset);
+    lv_anim_set_path(&anim_next,&path);
+
+    lv_anim_start(&anim_now);
+    lv_anim_start(&anim_next);
+  }
+}
+
+
 /**
   * @brief  时间标签更新
   * @param  无
@@ -194,9 +248,11 @@ static void LabelTimeGrp_Update()
   //  LABEL_TIME_CHECK_DEF(RTC_Time.Seconds % 10,RTC_TimeLast.Seconds % 10, 3);
   //  /*秒-十位*/
   //  LABEL_TIME_CHECK_DEF(RTC_Time.Seconds / 10,RTC_TimeLast.Seconds / 10, 2);
-    lv_label_set_text_fmt(labelTime_Grp[3], "%1d", RTC_Time.Seconds % 10);
-    lv_label_set_text_fmt(labelTime_Grp[2], "%1d", RTC_Time.Seconds / 10);
-    
+    // lv_label_set_text_fmt(labelTime_Grp[3], "%1d", RTC_Time.Seconds % 10);
+    // lv_label_set_text_fmt(labelTime_Grp[2], "%1d", RTC_Time.Seconds / 10);
+    Label_Slide_Change(RTC_Time.Seconds%10,RTC_TimeLast.Seconds%10,3);
+    Label_Slide_Change(RTC_Time.Seconds/10,RTC_TimeLast.Seconds/10,2);
+
     // /*分-个位*/
     // LABEL_TIME_CHECK_DEF(RTC_Time.RTC_Minutes % 10,RTC_TimeLast.RTC_Minutes % 10, 3);
     // /*分-十位*/
@@ -206,8 +262,11 @@ static void LabelTimeGrp_Update()
     // LABEL_TIME_CHECK_DEF(RTC_Time.Hours % 10,RTC_TimeLast.Hours % 10, 1);
     // /*时-十位*/
     // LABEL_TIME_CHECK_DEF(RTC_Time.Hours / 10,RTC_TimeLast.Hours / 10, 0);
-    lv_label_set_text_fmt(labelTime_Grp[1], "%d", RTC_Time.Minutes % 10);
-    lv_label_set_text_fmt(labelTime_Grp[0], "%d", RTC_Time.Minutes / 10);
+    // lv_label_set_text_fmt(labelTime_Grp[1], "%d", RTC_Time.Minutes % 10);
+    // lv_label_set_text_fmt(labelTime_Grp[0], "%d", RTC_Time.Minutes / 10);
+    
+    Label_Slide_Change(RTC_Time.Minutes%10,RTC_TimeLast.Minutes%10,1);
+    Label_Slide_Change(RTC_Time.Minutes/10,RTC_TimeLast.Minutes/10,0);
     RTC_TimeLast = RTC_Time;
 }
 
@@ -256,8 +315,9 @@ static void LabelDate_Create()
     lv_obj_align(labelDate, NULL, LV_ALIGN_IN_TOP_MID, 0, 8);
     //lv_obj_set_pos(labelDate,0,0);
     lv_obj_set_auto_realign(labelDate, true);
-}
 
+    
+}
 // /**
 //   * @brief  创建时间标签
 //   * @param  无
@@ -315,18 +375,18 @@ static void LabelTime_Create()
         lv_obj_t * label = lv_label_create(contTime, NULL);
         lv_obj_add_style(label, LV_LABEL_PART_MAIN, &time_style);
         lv_label_set_text(label, "1");
-        lv_obj_align(label, NULL, LV_ALIGN_CENTER, x_mod[i], 0);
+        lv_obj_align(label, NULL, LV_ALIGN_IN_TOP_MID, x_mod[i], 6);
         labelTime_Grp[i] = label;
     }
-    //lv_label_set_text_fmt(labelTime_Grp[0],"%d",5);
-    // for(int i = 0; i < __Sizeof(labelTime_Grp2); i++)
-    // {
-    //     lv_obj_t * label = lv_label_create(contTime, NULL);
-    //     lv_obj_add_style(label, LV_LABEL_PART_MAIN, &time_style);
-    //     lv_label_set_text(label, "0");
-    //     lv_obj_align(label, labelTime_Grp[i], LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
-    //     labelTime_Grp2[i] = label;
-    // }
+    
+    for(int i = 0; i < __Sizeof(labelTime_Grp2); i++)
+    {
+        lv_obj_t * label = lv_label_create(contTime, NULL);
+        lv_obj_add_style(label, LV_LABEL_PART_MAIN, &time_style);
+        lv_label_set_text(label, "0");
+        lv_obj_align(label, labelTime_Grp[i], LV_ALIGN_OUT_TOP_MID, 0, -10);
+        labelTime_Grp2[i] = label;
+    }
 
     /*时间清零*/
     //memset(&RTC_TimeLast, 0, sizeof(RTC_TimeLast));
@@ -379,7 +439,7 @@ static void Setup()
     // LabelTopBar_Create();
     LabelTime_Create();
     // LabelStep_Create();
-    
+
     //Power_SetAutoLowPowerEnable(true);
 }
 

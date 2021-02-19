@@ -9,15 +9,15 @@ void UILoopTask(void const * argument)
     lvgl_port_init();
     AppWindow_Create();
     Pages_Init();
-   
+    TickType_t xLastWakeTime; 
     for(;;)
     {
         //ulTaskNotifyTake(pdTRUE,portMAX_DELAY);
         page.Running();
         //Task_TimeUpdate();
         lv_task_handler(); /* let the GUI do its work */
-        
-        vTaskDelay(5);
+        vTaskDelayUntil(&xLastWakeTime,10);
+        //vTaskDelay(1);
     }
 }
 void TransLoopTask(void const * argument)
@@ -54,11 +54,11 @@ void lvgl_ui_init()
                 (void*)NULL,
                 (UBaseType_t)2,
                 (TaskHandle_t*)&uiloopTaskHandle);
-    xTaskCreate((TaskFunction_t)TransLoopTask,
-                (const char*)"TransloopTask",
-                (uint16_t)32,
-                (void*)NULL,
-                (UBaseType_t)4,
-                (TaskHandle_t*)&TransloopTaskHandle);
+    // xTaskCreate((TaskFunction_t)TransLoopTask,
+    //             (const char*)"TransloopTask",
+    //             (uint16_t)32,
+    //             (void*)NULL,
+    //             (UBaseType_t)4,
+    //             (TaskHandle_t*)&TransloopTaskHandle);
 }
 

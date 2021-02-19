@@ -3,13 +3,13 @@
 
 static lv_disp_drv_t disp_drv;
 static lv_disp_buf_t disp_buf;
-static lv_color_t buf1[LV_HOR_RES_MAX * 128];
-//static lv_color_t buf2[LV_HOR_RES_MAX * 64];
+static lv_color_t buf1[LV_HOR_RES_MAX * 64];
+static lv_color_t buf2[LV_HOR_RES_MAX * 64];
 void flush_callback(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p);
 void lvgl_port_init()
 {
     lv_init();
-    lv_disp_buf_init(&disp_buf, buf1, NULL, LV_HOR_RES_MAX * 128);
+    lv_disp_buf_init(&disp_buf, buf1, buf2, LV_HOR_RES_MAX * 64);
     lv_disp_drv_init(&disp_drv);
     disp_drv.hor_res = 128;
     disp_drv.ver_res = 128;
