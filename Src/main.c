@@ -24,7 +24,7 @@
 #include "rtc.h"
 #include "spi.h"
 #include "tim.h"
-#include "usb_otg.h"
+#include "usb_device.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -97,7 +97,6 @@ int main(void)
   MX_TIM9_Init();
   MX_TIM10_Init();
   MX_SPI2_Init();
-  MX_USB_OTG_FS_USB_Init();
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
   

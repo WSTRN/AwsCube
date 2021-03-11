@@ -27,7 +27,7 @@ typedef enum
 
 //static uint8_t OLED_GRAM[128][256];
 static TaskHandle_t uiloopTaskHandle = NULL;
-static TaskHandle_t TransloopTaskHandle = NULL;
+
 extern PageManager page;
 
 void lvgl_ui_init();
@@ -179,7 +179,7 @@ static void oled_drv_init()
   Write_Data(0x7F);
 
   Write_Command(0xa0);  //set re-map & data format
-  Write_Data(0x74);     //Horizontal address increment
+  Write_Data(0x76);     //Horizontal address increment
 
   Write_Command(0xa1);  //set display start line
   Write_Data(0x00);     //start 00 line
