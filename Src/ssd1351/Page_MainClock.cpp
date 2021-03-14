@@ -275,7 +275,7 @@ static void LabelTimeGrp_Update()
   * @param  task:任务句柄
   * @retval 无
   */
-void Task_TimeUpdate()//(lv_task_t * task)
+void TimeUpdate()//(lv_task_t * task)
 {
     /*时间标签状态更新*/
     LabelTimeGrp_Update();
@@ -488,6 +488,6 @@ void PageRegister_MainClock(uint8_t pageID)
     appWindow = AppWindow_GetCont(pageID);
  
     /*注册至页面调度器*/
-    page.PageRegister(pageID, Setup, Task_TimeUpdate, Exit, Event);
+    page.PageRegister(pageID, Setup, TimeUpdate, Exit, Event);
     
 }

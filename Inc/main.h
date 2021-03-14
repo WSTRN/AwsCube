@@ -58,12 +58,20 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define EncoderKey_Pin GPIO_PIN_0
+#define EncoderKey_GPIO_Port GPIOB
+#define ESP32Power_Pin GPIO_PIN_2
+#define ESP32Power_GPIO_Port GPIOB
+#define Charge_Pin GPIO_PIN_10
+#define Charge_GPIO_Port GPIOB
 #define RES_Pin GPIO_PIN_12
 #define RES_GPIO_Port GPIOB
 #define DC_Pin GPIO_PIN_14
 #define DC_GPIO_Port GPIOB
 #define CS_Pin GPIO_PIN_8
 #define CS_GPIO_Port GPIOA
+#define OLEDPower_Pin GPIO_PIN_9
+#define OLEDPower_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

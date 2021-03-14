@@ -27,6 +27,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "DisplayBasic.hpp"
+#include "Encoder.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -130,8 +131,10 @@ void StartDefaultTask(void const * argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
+  HAL_Delay(5);
   taskENTER_CRITICAL();
-  lvgl_ui_init();
+  lvgl_UI_Init();
+  Encoder_Init();
   vTaskDelete(NULL);
   taskEXIT_CRITICAL();
   /* USER CODE END StartDefaultTask */

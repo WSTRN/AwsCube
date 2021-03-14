@@ -18,7 +18,7 @@ typedef enum
     //PAGE_TimeCfg,
     //PAGE_Backlight,
     //PAGE_StopWatch,
-    //PAGE_Altitude,
+    PAGE_Weather,
     //PAGE_About,
     //PAGE_Game,
     /*保留*/
@@ -30,7 +30,7 @@ static TaskHandle_t uiloopTaskHandle = NULL;
 
 extern PageManager page;
 
-void lvgl_ui_init();
+void lvgl_UI_Init();
 void lvgl_port_init();
 /*AppWindow*/
 void AppWindow_Create();

@@ -61,14 +61,12 @@ do{\
 void Pages_Init()
 {
     PAGE_REG(MainClock);    //表盘
-    //extern void PageRegister_MainClock(uint8_t pageID);
-    //PageRegister_MainClock(PAGE_MainClock);
     // PAGE_REG(MainMenu);     //主菜单
     // PAGE_REG(TimeCfg);      //时间设置
     // PAGE_REG(Backlight);    //背光设置
     // PAGE_REG(StopWatch);    //秒表
-    // PAGE_REG(Altitude);     //海拔表
-    // PAGE_REG(About);        //关于
+    PAGE_REG(Weather);     
+    //PAGE_REG(About);        //关于
     // PAGE_REG(Game);         //游戏
     
     page.PagePush(PAGE_MainClock);//打开表盘
