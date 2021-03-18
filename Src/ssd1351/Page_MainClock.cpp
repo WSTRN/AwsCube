@@ -3,16 +3,17 @@
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_rtc.h"
 #include "SEGGER_RTT.h"
+#include "ButtonEvent.h"
 #include <math.h>
 
 /*RTC时间*/
-static RTC_TimeTypeDef RTC_Time;
-static RTC_TimeTypeDef RTC_TimeLast;
+RTC_TimeTypeDef RTC_Time;
+RTC_TimeTypeDef RTC_TimeLast;
 static RTC_DateTypeDef RTC_Date;
 extern RTC_HandleTypeDef hrtc;
 /*此页面窗口*/
 static lv_obj_t * appWindow;
-
+static uint8_t ThisPage;
 /*背景图片*/
 static lv_obj_t * MainClockBG;
 
@@ -208,17 +209,17 @@ void Label_Slide_Change(uint8_t nowval,uint8_t lastval,int label_index)
     lv_coord_t y_offset = abs(lv_obj_get_y(now_label) - lv_obj_get_y(next_label));
     /*滑动动画*/
     lv_obj_align(next_label, now_label, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
-    lv_anim_path_set_cb(&path, lv_anim_path_overshoot);
+    lv_anim_path_set_cb(&path, lv_anim_path_bounce);
 
     lv_anim_set_exec_cb(&anim_now,(lv_anim_exec_xcb_t) lv_obj_set_y);
     lv_anim_set_var(&anim_now,now_label);
-    lv_anim_set_time(&anim_now,400);
+    lv_anim_set_time(&anim_now,300);
     lv_anim_set_values(&anim_now,lv_obj_get_y(now_label),lv_obj_get_y(now_label)-y_offset);
     lv_anim_set_path(&anim_now,&path);
 
     lv_anim_set_exec_cb(&anim_next,(lv_anim_exec_xcb_t) lv_obj_set_y);
     lv_anim_set_var(&anim_next,next_label);
-    lv_anim_set_time(&anim_next,400);
+    lv_anim_set_time(&anim_next,300);
     lv_anim_set_values(&anim_next,lv_obj_get_y(next_label),lv_obj_get_y(next_label)-y_offset);
     lv_anim_set_path(&anim_next,&path);
 
@@ -275,7 +276,7 @@ static void LabelTimeGrp_Update()
   * @param  task:任务句柄
   * @retval 无
   */
-void TimeUpdate()//(lv_task_t * task)
+void TimeUpdate(int arg)//(lv_task_t * task)
 {
     /*时间标签状态更新*/
     LabelTimeGrp_Update();
@@ -311,7 +312,12 @@ static void LabelDate_Create()
     lv_style_set_text_font(&labelDate_style,LV_STATE_DEFAULT,&Morganite_36);
     lv_obj_add_style(labelDate,LV_LABEL_PART_MAIN,&labelDate_style);
     lv_label_set_recolor(labelDate, true);
-    lv_label_set_text(labelDate, "01#FF0000 /#01 MON");
+    //lv_label_set_text(labelDate, "01#FF0000 /#01 MON");
+    HAL_RTC_GetDate(&hrtc, &RTC_Date, RTC_FORMAT_BIN);
+    const char* week_str[7] = { "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
+    int8_t index = RTC_Date.WeekDay - 1;
+    __LimitValue(index, 0, 6);
+    lv_label_set_text_fmt(labelDate, "%02d#FF0000 /#%02d %s", RTC_Date.Month, RTC_Date.Date, week_str[index]);
     lv_obj_align(labelDate, NULL, LV_ALIGN_IN_TOP_MID, 0, 8);
     //lv_obj_set_pos(labelDate,0,0);
     lv_obj_set_auto_realign(labelDate, true);
@@ -356,6 +362,7 @@ static void LabelTime_Create()
         //lv_led_set_style(led, LV_LED_STYLE_MAIN, &led_style);
         lv_obj_set_size(led, 4, 6);
         lv_led_set_bright(led,190);
+        //lv_obj_set_pos(led,60,46+(i == 0 ? -10 : 10));
         lv_obj_align(led, NULL, LV_ALIGN_CENTER, 0, i == 0 ? -10 : 10);
         lv_led_on(led);
         ledSec[i] = led;
@@ -369,12 +376,13 @@ static void LabelTime_Create()
     // // time_style.text.color = LV_COLOR_WHITE;
     lv_style_set_text_color(&time_style,LV_STATE_DEFAULT, LV_COLOR_WHITE);
     lv_style_set_text_font(&time_style,LV_STATE_DEFAULT,&Morganite_100);
-    const lv_coord_t x_mod[4] = {-45, -20, 13, 38};
+    const lv_coord_t x_mod[4] = {-42, -16, 16, 42};
     for(int i = 0; i < __Sizeof(labelTime_Grp); i++)
     {
         lv_obj_t * label = lv_label_create(contTime, NULL);
         lv_obj_add_style(label, LV_LABEL_PART_MAIN, &time_style);
-        lv_label_set_text(label, "1");
+        lv_label_set_text(label, "0");
+        //lv_obj_set_pos(label,50+x_mod[i],6);
         lv_obj_align(label, NULL, LV_ALIGN_IN_TOP_MID, x_mod[i], 6);
         labelTime_Grp[i] = label;
     }
@@ -387,7 +395,12 @@ static void LabelTime_Create()
         lv_obj_align(label, labelTime_Grp[i], LV_ALIGN_OUT_TOP_MID, 0, -10);
         labelTime_Grp2[i] = label;
     }
-
+    HAL_RTC_GetTime(&hrtc, &RTC_Time, RTC_FORMAT_BIN);
+    lv_label_set_text_fmt(labelTime_Grp[0], "%d", RTC_Time.Minutes/10);
+    lv_label_set_text_fmt(labelTime_Grp[1], "%d", RTC_Time.Minutes%10);
+    lv_label_set_text_fmt(labelTime_Grp[2], "%d", RTC_Time.Seconds/10);
+    lv_label_set_text_fmt(labelTime_Grp[3], "%d", RTC_Time.Seconds%10);
+    RTC_TimeLast = RTC_Time;
     /*时间清零*/
     //memset(&RTC_TimeLast, 0, sizeof(RTC_TimeLast));
     
@@ -430,35 +443,68 @@ static void LabelTime_Create()
 //   * @param  无
 //   * @retval 无
 //   */
-static void Setup()
+static void Setup(int arg)
 {
     /*将此页面移到前台*/
+    lv_obj_set_pos(appWindow,0,arg>0?128:-128);
     lv_obj_move_foreground(appWindow);
     ImgBg_Create();
-    
     // LabelTopBar_Create();
     LabelTime_Create();
     // LabelStep_Create();
-
     //Power_SetAutoLowPowerEnable(true);
-}
 
+    static lv_anim_t anim_setup;
+    lv_anim_init(&anim_setup);
+    lv_anim_path_t path;
+    lv_anim_path_init(&path);
+    /*计算需要的Y偏移量*/
+    lv_coord_t y_offset = arg>0?128:-128;
+    /*滑动动画*/
+    lv_anim_path_set_cb(&path, lv_anim_path_ease_out);
+    //lv_anim_set_ready_cb(&anim_setup, MainClock_exit_cb);
+    lv_anim_set_exec_cb(&anim_setup,(lv_anim_exec_xcb_t) lv_obj_set_y);
+    lv_anim_set_var(&anim_setup,appWindow);
+    lv_anim_set_time(&anim_setup,300);
+    lv_anim_set_values(&anim_setup,lv_obj_get_y(appWindow),lv_obj_get_y(appWindow)-y_offset);
+    lv_anim_set_path(&anim_setup,&path);
+    lv_anim_start(&anim_setup);
+}
+void MainClock_exit_cb(lv_anim_t* a)
+{
+  
+    /*删除此页面上的子控件*/
+    lv_obj_clean(appWindow);
+    memset((void*)&RTC_Time,0,sizeof(RTC_Time));
+    memset((void*)&RTC_TimeLast,0,sizeof(RTC_TimeLast));
+    /*禁用自动关机*/
+    //Power_SetAutoLowPowerEnable(false);
+}
 /**
   * @brief  页面退出事件
   * @param  无
   * @retval 无
   */
-static void Exit()
+static void Exit(int arg)
 {
-    /*关任务*/
-    lv_task_del(taskTimeUpdate);
-    lv_task_del(taskTopBarUpdate);
+    static lv_anim_t anim_exit;
+    lv_anim_init(&anim_exit);
+    lv_anim_path_t path;
+    lv_anim_path_init(&path);
+    /*计算需要的Y偏移量*/
+    lv_coord_t y_offset = arg>0?128:-128;
+    /*滑动动画*/
+  
+    lv_anim_path_set_cb(&path, lv_anim_path_ease_out);
+    lv_anim_set_ready_cb(&anim_exit, MainClock_exit_cb);
+    lv_anim_set_exec_cb(&anim_exit,(lv_anim_exec_xcb_t) lv_obj_set_y);
+    lv_anim_set_var(&anim_exit,appWindow);
+    lv_anim_set_time(&anim_exit,300);
+    lv_anim_set_values(&anim_exit,lv_obj_get_y(appWindow),lv_obj_get_y(appWindow)-y_offset);
+    lv_anim_set_path(&anim_exit,&path);
+
+    lv_anim_start(&anim_exit);
     
-    /*删除此页面上的子控件*/
-    lv_obj_clean(appWindow);
-    
-    /*禁用自动关机*/
-    //Power_SetAutoLowPowerEnable(false);
 }
 
 /**
@@ -470,11 +516,15 @@ static void Exit()
 static void Event(void* btn, int event)
 {
     /*当有按键点击或长按时*/
-    // if(event == ButtonEvent::EVENT_ButtonClick || event == ButtonEvent::EVENT_ButtonLongPressed)
-    // {
-    //     /*进入主菜单*/
-    //     page.PagePush(PAGE_MainClock);
-    // }
+    if((event == ButtonEvent::EVENT_ButtonClick || event == ButtonEvent::EVENT_ButtonLongPressed)&&(btn!=NULL))
+    {
+        /*进入主菜单*/
+        page.PagePush(PAGE_Weather);
+    }
+    if((event>3)&&(btn==NULL))
+        page.PageChangeTo(ThisPage<=PAGE_NONE+1?ThisPage:ThisPage-1);
+    else if((event<-3)&&(btn==NULL))
+        page.PageChangeTo(ThisPage>=PAGE_MAX-1?ThisPage:ThisPage+1);
 }
 
 /**
@@ -486,7 +536,7 @@ void PageRegister_MainClock(uint8_t pageID)
 {
     /*获取分配给此页面的窗口*/
     appWindow = AppWindow_GetCont(pageID);
- 
+    ThisPage = pageID;
     /*注册至页面调度器*/
     page.PageRegister(pageID, Setup, TimeUpdate, Exit, Event);
     

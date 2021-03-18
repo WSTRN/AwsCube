@@ -740,13 +740,13 @@ static LV_ATTRIBUTE_LARGE_CONST const uint8_t gylph_bitmap[] = {
 static const lv_font_fmt_txt_glyph_dsc_t glyph_dsc[] = {
     {.bitmap_index = 0, .adv_w = 0, .box_w = 0, .box_h = 0, .ofs_x = 0, .ofs_y = 0} /* id = 0 reserved */,
     {.bitmap_index = 0, .adv_w = 378, .box_w = 66, .box_h = 72, .ofs_x = 1, .ofs_y = -1},
-    {.bitmap_index = 472, .adv_w = 278, .box_w = 48, .box_h = 70, .ofs_x = 0, .ofs_y = 0},
+    {.bitmap_index = 472, .adv_w = 378, .box_w = 48, .box_h = 70, .ofs_x = 0, .ofs_y = 0},
     {.bitmap_index = 676, .adv_w = 378, .box_w = 66, .box_h = 71, .ofs_x = 1, .ofs_y = 0},
     {.bitmap_index = 1332, .adv_w = 378, .box_w = 66, .box_h = 72, .ofs_x = 1, .ofs_y = -1},
-    {.bitmap_index = 1956, .adv_w = 424, .box_w = 78, .box_h = 70, .ofs_x = 0, .ofs_y = 0},
+    {.bitmap_index = 1956, .adv_w = 378, .box_w = 78, .box_h = 70, .ofs_x = 0, .ofs_y = 0},
     {.bitmap_index = 2460, .adv_w = 378, .box_w = 66, .box_h = 71, .ofs_x = 1, .ofs_y = -1},
     {.bitmap_index = 2936, .adv_w = 378, .box_w = 66, .box_h = 72, .ofs_x = 1, .ofs_y = -1},
-    {.bitmap_index = 3527, .adv_w = 328, .box_w = 60, .box_h = 70, .ofs_x = 0, .ofs_y = 0},
+    {.bitmap_index = 3527, .adv_w = 378, .box_w = 60, .box_h = 70, .ofs_x = 0, .ofs_y = 0},
     {.bitmap_index = 4159, .adv_w = 378, .box_w = 66, .box_h = 72, .ofs_x = 1, .ofs_y = -1},
     {.bitmap_index = 4841, .adv_w = 378, .box_w = 66, .box_h = 72, .ofs_x = 1, .ofs_y = -1},
     {.bitmap_index = 5430, .adv_w = 211, .box_w = 27, .box_h = 42, .ofs_x = 2, .ofs_y = 0}

@@ -240,7 +240,7 @@ void PageManager::Running()
 
         /*触发旧页面退出事件*/
         if(PageList[OldPage].ExitCallback != NULL && IS_PAGE(OldPage))
-            PageList[OldPage].ExitCallback();
+            PageList[OldPage].ExitCallback(NewPage>=OldPage?1:-1);
         
         /*标记旧页面*/
         LastPage = OldPage;
@@ -250,7 +250,7 @@ void PageManager::Running()
 
         /*触发新页面初始化事件*/
         if(PageList[NewPage].SetupCallback != NULL && IS_PAGE(NewPage))
-            PageList[NewPage].SetupCallback();
+            PageList[NewPage].SetupCallback(NewPage>=OldPage?1:-1);
 
         /*新页面初始化完成，标记为旧页面*/
         OldPage = NewPage;
@@ -262,6 +262,6 @@ void PageManager::Running()
         
         /*页面循环事件*/
         if(PageList[NowPage].LoopCallback != NULL && IS_PAGE(NowPage))
-            PageList[NowPage].LoopCallback();
+            PageList[NowPage].LoopCallback(0);
     }
 }

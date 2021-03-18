@@ -42,7 +42,7 @@
 #include <stdint.h>
 
 class PageManager {
-    typedef void(*CallbackFunction_t)(void);
+    typedef void(*CallbackFunction_t)(int);
     typedef void(*EventFunction_t)(void*,int);
     typedef struct {
         CallbackFunction_t SetupCallback;
