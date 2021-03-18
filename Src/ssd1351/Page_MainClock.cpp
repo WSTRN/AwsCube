@@ -290,7 +290,7 @@ void TimeUpdate(int arg)//(lv_task_t * task)
     const char* week_str[7] = { "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
     int8_t index = RTC_Date.WeekDay - 1;
     __LimitValue(index, 0, 6);
-    lv_label_set_text_fmt(labelDate, "%02d#FF0000 /#%02d %s", RTC_Date.Month, RTC_Date.Date, week_str[index]);
+    lv_label_set_text_fmt(labelDate, "%02d#0000FF /#%02d %s", RTC_Date.Month, RTC_Date.Date, week_str[index]);
 }
 
 /**
@@ -317,7 +317,7 @@ static void LabelDate_Create()
     const char* week_str[7] = { "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
     int8_t index = RTC_Date.WeekDay - 1;
     __LimitValue(index, 0, 6);
-    lv_label_set_text_fmt(labelDate, "%02d#FF0000 /#%02d %s", RTC_Date.Month, RTC_Date.Date, week_str[index]);
+    lv_label_set_text_fmt(labelDate, "%02d#0000FF /#%02d %s", RTC_Date.Month, RTC_Date.Date, week_str[index]);
     lv_obj_align(labelDate, NULL, LV_ALIGN_IN_TOP_MID, 0, 8);
     //lv_obj_set_pos(labelDate,0,0);
     lv_obj_set_auto_realign(labelDate, true);
