@@ -19,7 +19,7 @@ typedef enum
     //PAGE_Backlight,
     //PAGE_StopWatch,
     PAGE_Weather,
-    //PAGE_About,
+    PAGE_About,
     //PAGE_Game,
     /*保留*/
     PAGE_MAX
@@ -43,7 +43,6 @@ lv_coord_t AppWindow_GetWidth();
 
 
 
-extern PageManager page;
 // void PageDelay(uint32_t ms);
 #define PageWaitUntil(condition)\
 while(!(condition)){\
@@ -63,26 +62,6 @@ lv_coord_t lv_obj_get_y_center(lv_obj_t * obj);
 void lv_obj_set_color(lv_obj_t * obj, lv_color_t color);
 void lv_table_set_align(lv_obj_t * table, lv_label_align_t align);
 lv_obj_t * lv_win_get_label(lv_obj_t * win);
-void lv_obj_add_anim(
-    lv_obj_t * obj, lv_anim_t * a,
-    lv_anim_exec_xcb_t exec_cb, 
-    int32_t start, int32_t end,
-    uint16_t time = LV_ANIM_TIME_DEFAULT,
-    lv_anim_ready_cb_t ready_cb = NULL,
-    lv_anim_path_cb_t path_cb = lv_anim_path_ease_out
-);
-#define LV_OBJ_ADD_ANIM(obj,attr,target,time)\
-do{\
-    static lv_anim_t a;\
-    lv_obj_add_anim(\
-        (obj), &a,\
-        (lv_anim_exec_xcb_t)lv_obj_set_##attr,\
-        lv_obj_get_##attr(obj),\
-        (target),\
-        (time)\
-    );\
-}while(0)
-
 
 
 #define OLED_RES_GPIO_PORT      (GPIOB)				//RES#引脚
@@ -221,7 +200,6 @@ static void oled_drv_init()
   Write_Data(0x05);
 
   Write_Command(0xA6);
-
   Write_Command(0xaf);	 //display on
   
 }

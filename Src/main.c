@@ -176,7 +176,16 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void TIM10_PeriodElapsedHandle(void);
+void UART2_Receive_CB(void);
 
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	if(huart->Instance == USART2)
+	{
+		UART2_Receive_CB();
+	}
+}
 /* USER CODE END 4 */
 
  /**
@@ -197,7 +206,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     lv_tick_inc(1);
   }
   /* USER CODE BEGIN Callback 1 */
-
+  if(htim->Instance == TIM10) {
+ 		TIM10_PeriodElapsedHandle();
+  }
   /* USER CODE END Callback 1 */
 }
 

@@ -2,6 +2,7 @@
 #include "CommonMacro.h"
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_rtc.h"
+#include "gpio.h"
 #include "SEGGER_RTT.h"
 #include "ButtonEvent.h"
 #include <math.h>
@@ -18,10 +19,10 @@ static uint8_t ThisPage;
 static lv_obj_t * MainClockBG;
 
 /*气压计信息*/
-static lv_obj_t * labelBMP;
+//static lv_obj_t * labelBMP;
 
 /*电池信息*/
-static lv_obj_t * labelBatt;
+//static lv_obj_t * labelBatt;
 
 /*时间信息*/
 static lv_obj_t * labelDate;
@@ -37,10 +38,10 @@ static lv_obj_t * labelTime_Grp[4];
 static lv_obj_t * labelTime_Grp2[4];
 
 /*运动图标*/
-static lv_obj_t * imgRun;
+//static lv_obj_t * imgRun;
 
 /*计步次数标签*/
-static lv_obj_t * labelStepCnt;
+//static lv_obj_t * labelStepCnt;
 
 /*时间更新任务句柄*/
 static lv_task_t * taskTimeUpdate;
@@ -54,9 +55,9 @@ static lv_task_t * taskTopBarUpdate;
   */
 static void ImgBg_Create()
 {
-    LV_IMG_DECLARE(imgMainClockBG);
+    LV_IMG_DECLARE(ImgMainClockBG);
     MainClockBG = lv_img_create(appWindow, NULL);
-    lv_img_set_src(MainClockBG, &imgMainClockBG);
+    lv_img_set_src(MainClockBG, &ImgMainClockBG);
     lv_obj_set_pos(MainClockBG,0,0);
     //lv_obj_align(MainClockBG, NULL, LV_ALIGN_CENTER, 0, 0);
 }
@@ -136,44 +137,6 @@ static void ImgBg_Create()
 //     Task_TopBarUpdate(taskTopBarUpdate);
 // }
 
-/**
-  * @brief  滑动改变时间标签
-  * @param  val_now:当前值
-  * @param  val_last:上一次的值
-  * @param  index:标签索引
-  * @retval 无
-  */
-// #define LABEL_TIME_CHECK_DEF(val_now,val_last,index)\
-// do{\
-//     /*当前值发生改变时*/\
-//     if((val_now) != (val_last))\
-//     {\
-//         /*标签对象*/\
-//         lv_obj_t * next_label;\
-//         lv_obj_t * now_label;\
-//         /*判断两个标签的相对位置，确定谁是下一个标签*/\
-//         if(lv_obj_get_y(labelTime_Grp2[index]) > lv_obj_get_y(labelTime_Grp[index]))\
-//         {\
-//             now_label = labelTime_Grp[index];\
-//             next_label = labelTime_Grp2[index];\
-//         }\
-//         else\
-//         {\
-//             now_label = labelTime_Grp2[index];\
-//             next_label = labelTime_Grp[index];\
-//         }\
-//         \
-//         lv_label_set_text_fmt(now_label, "%d", (val_last));\
-//         lv_label_set_text_fmt(next_label, "%d", (val_now));\
-//         /*对齐*/\
-//         lv_obj_align(next_label, now_label, LV_ALIGN_OUT_TOP_MID, 0, -10);\
-//         /*计算需要的Y偏移量*/\
-//         lv_coord_t y_offset = abs(lv_obj_get_y(now_label) - lv_obj_get_y(next_label));\
-//         /*滑动动画*/\
-//         LV_OBJ_ADD_ANIM(now_label, y, lv_obj_get_y(now_label) + y_offset, LV_ANIM_TIME_DEFAULT);\
-//         LV_OBJ_ADD_ANIM(next_label, y, lv_obj_get_y(next_label) + y_offset, LV_ANIM_TIME_DEFAULT);\
-//     }\
-// }while(0)
 
 void Label_Slide_Change(uint8_t nowval,uint8_t lastval,int label_index)
 {
@@ -452,6 +415,9 @@ static void Setup(int arg)
     // LabelTopBar_Create();
     LabelTime_Create();
     // LabelStep_Create();
+
+
+    //HAL_GPIO_WritePin(ExtPower_GPIO_Port, ExtPower_Pin, GPIO_PIN_SET);
     //Power_SetAutoLowPowerEnable(true);
 
     static lv_anim_t anim_setup;

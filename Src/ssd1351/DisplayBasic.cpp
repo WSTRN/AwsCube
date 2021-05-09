@@ -66,7 +66,7 @@ void Pages_Init()
     // PAGE_REG(Backlight);    //背光设置
     // PAGE_REG(StopWatch);    //秒表
     PAGE_REG(Weather);     
-    //PAGE_REG(About);        //关于
+    PAGE_REG(About);        //关于
     // PAGE_REG(Game);         //游戏
     
     page.PagePush(PAGE_MainClock);//打开表盘
