@@ -216,7 +216,12 @@ static void LabelTimeGrp_Update()
     // lv_label_set_text_fmt(labelTime_Grp[2], "%1d", RTC_Time.Seconds / 10);
     Label_Slide_Change(RTC_Time.Seconds%10,RTC_TimeLast.Seconds%10,3);
     Label_Slide_Change(RTC_Time.Seconds/10,RTC_TimeLast.Seconds/10,2);
-
+    if(RTC_Time.Seconds%10!=RTC_TimeLast.Seconds%10)
+    {
+        /*翻转LED状态*/
+      lv_led_toggle(ledSec[0]);
+      lv_led_toggle(ledSec[1]);
+    }
     // /*分-个位*/
     // LABEL_TIME_CHECK_DEF(RTC_Time.RTC_Minutes % 10,RTC_TimeLast.RTC_Minutes % 10, 3);
     // /*分-十位*/
@@ -243,10 +248,6 @@ void TimeUpdate(int arg)//(lv_task_t * task)
 {
     /*时间标签状态更新*/
     LabelTimeGrp_Update();
-    
-    /*翻转LED状态*/
-    lv_led_toggle(ledSec[0]);
-    lv_led_toggle(ledSec[1]);
     
     /*日期*/
     HAL_RTC_GetDate(&hrtc, &RTC_Date, RTC_FORMAT_BIN);

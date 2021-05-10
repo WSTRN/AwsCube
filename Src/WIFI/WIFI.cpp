@@ -108,16 +108,16 @@ bool WIFI::GetProcessRawData(Tag t)
 		WeatherData[2].humidity   = tempdata[7];
 		break;
 	}
-
+	return true;
 }
 extern"C" void UART2_Receive_CB(void)
 {
 	BaseType_t pxHigherPriorityTaskWoken;
-	// uint32_t ulReturn;
-	// ulReturn = taskENTER_CRITICAL_FROM_ISR();
+	uint32_t ulReturn;
+	ulReturn = taskENTER_CRITICAL_FROM_ISR();
 
 	xSemaphoreGiveFromISR(UARTRXcplt,&pxHigherPriorityTaskWoken);
 	portYIELD_FROM_ISR(pxHigherPriorityTaskWoken);
 	
-	// taskEXIT_CRITICAL_FROM_ISR(ulReturn);
+	taskEXIT_CRITICAL_FROM_ISR(ulReturn);
 }
