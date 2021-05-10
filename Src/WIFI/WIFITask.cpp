@@ -30,6 +30,8 @@ void WIFITask(void const * argument)
         vTaskDelay(1000);
     }
     SEGGER_RTT_printf(0,"connected\r\n");
+    esp8266.GetData(WIFI::Tag_GetNTP,NULL);
+
     esp8266.getNTP(&ntp);
     RTC_TimeNow.Hours = ntp.hour;
     RTC_TimeNow.Minutes = ntp.min;
@@ -59,7 +61,7 @@ void WIFI_Init(void)
     UARTRXcplt=xSemaphoreCreateBinary();
     xTaskCreate((TaskFunction_t)WIFITask,
                 (const char*)"WIFITask",
-                (uint16_t)128,
+                (uint16_t)256,
                 (void*)NULL,
                 (UBaseType_t)3,
                 (TaskHandle_t*)&WIFITaskHandle);

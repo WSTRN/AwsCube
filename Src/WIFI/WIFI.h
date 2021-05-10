@@ -34,9 +34,9 @@ public:
 
 private:
 
-    uint8_t tempdata[10];
+    uint8_t tempdata[12];
     // uint8_t sum;
     // uint8_t tag;
 
-    volatile bool GetProcessRawData(Tag t);
+    bool GetProcessRawData(Tag t);
 };

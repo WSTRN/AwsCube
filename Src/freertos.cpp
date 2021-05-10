@@ -26,7 +26,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "usb_device.h"
 #include "DisplayBasic.hpp"
 #include "Encoder.h"
 #include "IR.h"
@@ -138,7 +137,7 @@ void StartDefaultTask(void const * argument)
   HAL_Delay(5);
   taskENTER_CRITICAL();
   lvgl_UI_Init();
-  Encoder_Init();
+  //Encoder_Init();
   WIFI_Init();
   //IR_Remote_Init();
   taskEXIT_CRITICAL();

@@ -38,15 +38,16 @@ bool WIFI::CheckConnection(void)
 
 bool WIFI::GetData(Tag t,uint8_t *dp)
 {
+	GetProcessRawData(t);
     return true;
 }
 
-volatile bool WIFI::GetProcessRawData(Tag t)
+bool WIFI::GetProcessRawData(Tag t)
 {
 	uint8_t tag=t;
 	UBaseType_t xReturn;
-	HAL_UART_Transmit(&huart2,&tag,1,10);
-	HAL_UART_Receive_IT(&huart2,tempdata,10);
+	HAL_UART_Transmit(&huart2,&tag,1,100);
+	HAL_UART_Receive_DMA(&huart2,tempdata,10);
 	xReturn=xSemaphoreTake(UARTRXcplt,1500);
 	if(xReturn!=pdTRUE)
 	{
@@ -75,12 +76,12 @@ volatile bool WIFI::GetProcessRawData(Tag t)
 		tempdata[4]==0x3f?Isconnected=true:Isconnected=false;
 		break;
 	case Tag_GetNTP:
-		NTP.sec   = tempdata[2];
-		NTP.min   = tempdata[3];
-		NTP.hour  = tempdata[4];
-		NTP.day   = tempdata[5];
-		NTP.month = tempdata[6];
-		NTP.year  = tempdata[7];
+		NTP.sec   = tempdata[7];
+		NTP.min   = tempdata[6];
+		NTP.hour  = tempdata[5];
+		NTP.day   = tempdata[4];
+		NTP.month = tempdata[3];
+		NTP.year  = tempdata[2];
 		break;
 	case Tag_GetWeather0:
 		WeatherData[0].code_day   = tempdata[2];
@@ -112,11 +113,11 @@ volatile bool WIFI::GetProcessRawData(Tag t)
 extern"C" void UART2_Receive_CB(void)
 {
 	BaseType_t pxHigherPriorityTaskWoken;
-	//uint32_t ulReturn;
-	//ulReturn = taskENTER_CRITICAL_FROM_ISR();
+	// uint32_t ulReturn;
+	// ulReturn = taskENTER_CRITICAL_FROM_ISR();
 
 	xSemaphoreGiveFromISR(UARTRXcplt,&pxHigherPriorityTaskWoken);
 	portYIELD_FROM_ISR(pxHigherPriorityTaskWoken);
 	
-	//taskEXIT_CRITICAL_FROM_ISR(ulReturn);
+	// taskEXIT_CRITICAL_FROM_ISR(ulReturn);
 }
