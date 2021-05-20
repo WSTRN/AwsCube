@@ -40,7 +40,7 @@ public:
     bool getNTP(TimeType *tp);
     bool getWeatherUDTime(TimeType *tp);
 
-protected:
+
     TimeType NTP;
     WeatherDataType WeatherData[3];
     TimeType WeatherUDTime;

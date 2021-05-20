@@ -10,13 +10,11 @@
 #include "queue.h"
 
 
-extern TaskHandle_t WIFITaskHandle;
-extern SemaphoreHandle_t UARTRXcplt;
-
 WIFI::WIFI():NetWork()
 {
 	// tag=0;
 	// sum=0;
+	
 }
 
 void WIFI::ExtPowerEnable(bool En)
@@ -36,10 +34,9 @@ bool WIFI::CheckConnection(void)
 		return false;
 }
 
-bool WIFI::GetData(Tag t,uint8_t *dp)
+bool WIFI::RequestData(Tag t)
 {
-	GetProcessRawData(t);
-    return true;
+	return GetProcessRawData(t);
 }
 
 bool WIFI::GetProcessRawData(Tag t)
@@ -88,24 +85,26 @@ bool WIFI::GetProcessRawData(Tag t)
 		WeatherData[0].code_night = tempdata[3];
 		WeatherData[0].high       = tempdata[4];
 		WeatherData[0].low        = tempdata[5];
-		WeatherData[0].wind_scale = tempdata[6];
-		WeatherData[0].humidity   = tempdata[7];
+		WeatherData[0].humidity = tempdata[6];
+		WeatherData[0].wind_scale   = tempdata[7];
 		break;
 	case Tag_GetWeather1:
 		WeatherData[1].code_day   = tempdata[2];
 		WeatherData[1].code_night = tempdata[3];
 		WeatherData[1].high       = tempdata[4];
 		WeatherData[1].low        = tempdata[5];
-		WeatherData[1].wind_scale = tempdata[6];
-		WeatherData[1].humidity   = tempdata[7];
+		WeatherData[1].humidity = tempdata[6];
+		WeatherData[1].wind_scale   = tempdata[7];
 		break;
 	case Tag_GetWeather2:
 		WeatherData[2].code_day   = tempdata[2];
 		WeatherData[2].code_night = tempdata[3];
 		WeatherData[2].high       = tempdata[4];
 		WeatherData[2].low        = tempdata[5];
-		WeatherData[2].wind_scale = tempdata[6];
-		WeatherData[2].humidity   = tempdata[7];
+		WeatherData[2].humidity = tempdata[6];
+		WeatherData[2].wind_scale   = tempdata[7];
+		break;
+	default:
 		break;
 	}
 	return true;

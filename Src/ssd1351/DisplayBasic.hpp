@@ -7,7 +7,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "PageManager.h"
-
+static char* week_str[7] = { "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
 typedef enum
 {
     /*保留*/

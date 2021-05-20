@@ -74,7 +74,8 @@ void About_exit_cb(lv_anim_t* a)
     
     /*删除此页面上的子控件*/
     lv_obj_clean(appWindow);
-    
+    HAL_GPIO_WritePin(ExtPower_GPIO_Port, ExtPower_Pin, GPIO_PIN_SET);
+    HAL_UART_MspInit(&huart2);
     /*禁用自动关机*/
     //Power_SetAutoLowPowerEnable(false);
 }

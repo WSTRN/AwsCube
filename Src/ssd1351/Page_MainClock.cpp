@@ -8,8 +8,8 @@
 #include <math.h>
 
 /*RTC时间*/
-RTC_TimeTypeDef RTC_Time;
-RTC_TimeTypeDef RTC_TimeLast;
+static RTC_TimeTypeDef RTC_Time;
+static RTC_TimeTypeDef RTC_TimeLast;
 static RTC_DateTypeDef RTC_Date;
 extern RTC_HandleTypeDef hrtc;
 /*此页面窗口*/
@@ -172,19 +172,21 @@ void Label_Slide_Change(uint8_t nowval,uint8_t lastval,int label_index)
     lv_coord_t y_offset = abs(lv_obj_get_y(now_label) - lv_obj_get_y(next_label));
     /*滑动动画*/
     lv_obj_align(next_label, now_label, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
-    lv_anim_path_set_cb(&path, lv_anim_path_bounce);
+    lv_anim_path_set_cb(&path, lv_anim_path_overshoot);
 
     lv_anim_set_exec_cb(&anim_now,(lv_anim_exec_xcb_t) lv_obj_set_y);
     lv_anim_set_var(&anim_now,now_label);
-    lv_anim_set_time(&anim_now,300);
+    lv_anim_set_time(&anim_now,600);
     lv_anim_set_values(&anim_now,lv_obj_get_y(now_label),lv_obj_get_y(now_label)-y_offset);
     lv_anim_set_path(&anim_now,&path);
 
     lv_anim_set_exec_cb(&anim_next,(lv_anim_exec_xcb_t) lv_obj_set_y);
     lv_anim_set_var(&anim_next,next_label);
-    lv_anim_set_time(&anim_next,300);
+    lv_anim_set_time(&anim_next,600);
     lv_anim_set_values(&anim_next,lv_obj_get_y(next_label),lv_obj_get_y(next_label)-y_offset);
     lv_anim_set_path(&anim_next,&path);
+
+    //lv_anim_set_ready_cb(&anim_next, Slide_ready_cb);
 
     lv_anim_start(&anim_now);
     lv_anim_start(&anim_next);
@@ -204,7 +206,9 @@ static void LabelTimeGrp_Update()
 //    RTC_Time.RTC_Hours = (millis() / (3600 * 1000)) % 100;
 //    RTC_Time.RTC_Minutes = (millis() / (60 * 1000)) % 60;
 //    RTC_Time.RTC_Seconds = (millis() / 1000) % 60;
+  
     HAL_RTC_GetTime(&hrtc, &RTC_Time, RTC_FORMAT_BIN);
+   
     //SEGGER_RTT_printf(0,"%d \r\n",RTC_Time.Seconds);
 
 
@@ -214,9 +218,9 @@ static void LabelTimeGrp_Update()
   //  LABEL_TIME_CHECK_DEF(RTC_Time.Seconds / 10,RTC_TimeLast.Seconds / 10, 2);
     // lv_label_set_text_fmt(labelTime_Grp[3], "%1d", RTC_Time.Seconds % 10);
     // lv_label_set_text_fmt(labelTime_Grp[2], "%1d", RTC_Time.Seconds / 10);
-    Label_Slide_Change(RTC_Time.Seconds%10,RTC_TimeLast.Seconds%10,3);
-    Label_Slide_Change(RTC_Time.Seconds/10,RTC_TimeLast.Seconds/10,2);
-    if(RTC_Time.Seconds%10!=RTC_TimeLast.Seconds%10)
+    Label_Slide_Change(RTC_Time.Minutes%10,RTC_TimeLast.Minutes%10,3);
+    Label_Slide_Change(RTC_Time.Minutes/10,RTC_TimeLast.Minutes/10,2);
+    if(RTC_Time.Seconds!=RTC_TimeLast.Seconds)
     {
         /*翻转LED状态*/
       lv_led_toggle(ledSec[0]);
@@ -234,8 +238,8 @@ static void LabelTimeGrp_Update()
     // lv_label_set_text_fmt(labelTime_Grp[1], "%d", RTC_Time.Minutes % 10);
     // lv_label_set_text_fmt(labelTime_Grp[0], "%d", RTC_Time.Minutes / 10);
     
-    Label_Slide_Change(RTC_Time.Minutes%10,RTC_TimeLast.Minutes%10,1);
-    Label_Slide_Change(RTC_Time.Minutes/10,RTC_TimeLast.Minutes/10,0);
+    Label_Slide_Change(RTC_Time.Hours%10,RTC_TimeLast.Hours%10,1);
+    Label_Slide_Change(RTC_Time.Hours/10,RTC_TimeLast.Hours/10,0);
     RTC_TimeLast = RTC_Time;
 }
 
@@ -244,6 +248,7 @@ static void LabelTimeGrp_Update()
   * @param  task:任务句柄
   * @retval 无
   */
+
 void TimeUpdate(int arg)//(lv_task_t * task)
 {
     /*时间标签状态更新*/
@@ -251,8 +256,8 @@ void TimeUpdate(int arg)//(lv_task_t * task)
     
     /*日期*/
     HAL_RTC_GetDate(&hrtc, &RTC_Date, RTC_FORMAT_BIN);
-    const char* week_str[7] = { "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
-    int8_t index = RTC_Date.WeekDay - 1;
+    
+    int8_t index = RTC_Date.WeekDay-1;
     __LimitValue(index, 0, 6);
     lv_label_set_text_fmt(labelDate, "%02d#0000FF /#%02d %s", RTC_Date.Month, RTC_Date.Date, week_str[index]);
 }
@@ -278,6 +283,8 @@ static void LabelDate_Create()
     lv_label_set_recolor(labelDate, true);
     //lv_label_set_text(labelDate, "01#FF0000 /#01 MON");
     HAL_RTC_GetDate(&hrtc, &RTC_Date, RTC_FORMAT_BIN);
+
+
     const char* week_str[7] = { "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
     int8_t index = RTC_Date.WeekDay - 1;
     __LimitValue(index, 0, 6);
@@ -360,10 +367,10 @@ static void LabelTime_Create()
         labelTime_Grp2[i] = label;
     }
     HAL_RTC_GetTime(&hrtc, &RTC_Time, RTC_FORMAT_BIN);
-    lv_label_set_text_fmt(labelTime_Grp[0], "%d", RTC_Time.Minutes/10);
-    lv_label_set_text_fmt(labelTime_Grp[1], "%d", RTC_Time.Minutes%10);
-    lv_label_set_text_fmt(labelTime_Grp[2], "%d", RTC_Time.Seconds/10);
-    lv_label_set_text_fmt(labelTime_Grp[3], "%d", RTC_Time.Seconds%10);
+    lv_label_set_text_fmt(labelTime_Grp[0], "%d", RTC_Time.Hours/10);
+    lv_label_set_text_fmt(labelTime_Grp[1], "%d", RTC_Time.Hours%10);
+    lv_label_set_text_fmt(labelTime_Grp[2], "%d", RTC_Time.Minutes/10);
+    lv_label_set_text_fmt(labelTime_Grp[3], "%d", RTC_Time.Minutes%10);
     RTC_TimeLast = RTC_Time;
     /*时间清零*/
     //memset(&RTC_TimeLast, 0, sizeof(RTC_TimeLast));

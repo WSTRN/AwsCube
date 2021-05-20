@@ -141,6 +141,13 @@ void StartDefaultTask(void const * argument)
   WIFI_Init();
   //IR_Remote_Init();
   taskEXIT_CRITICAL();
+  uint8_t data[6]={0xfd,0x00,0x01,0x02,0x03,0x04};
+  xQueueSend(WIFI_Queue,data,0);
+  xQueueSend(WIFI_Queue,data+1,0);
+  xQueueSend(WIFI_Queue,data+2,0);
+  xQueueSend(WIFI_Queue,data+3,0);
+  xQueueSend(WIFI_Queue,data+4,0);
+  xQueueSend(WIFI_Queue,data+5,0);
   vTaskDelete(NULL);
   /* USER CODE END StartDefaultTask */
 }
