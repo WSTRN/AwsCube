@@ -83,7 +83,30 @@ void WIFITask(void const * argument)
         }
     }
 }
-
+extern"C" void RTC_Alarm_CB(void)
+{
+    RTC_TimeTypeDef RTC_Time;
+    uint8_t msg;
+    HAL_RTC_GetTime(&hrtc,&RTC_Time,FORMAT_BIN);
+    SEGGER_RTT_printf(0,"Alarm time out \r\n");
+    // msg=WIFI::Tag_PowerOn;
+    // xQueueSend(WIFI_Queue,&msg,0);
+    // msg=WIFI::Tag_ConnectionStatus;
+    // xQueueSend(WIFI_Queue,&msg,0);
+    // msg=WIFI::Tag_GetWeather0;
+    // xQueueSend(WIFI_Queue,&msg,0);
+    // msg=WIFI::Tag_GetWeather1;
+    // xQueueSend(WIFI_Queue,&msg,0);
+    // msg=WIFI::Tag_GetWeather2;
+    // xQueueSend(WIFI_Queue,&msg,0);
+    // if(RTC_Time.Hours==6||RTC_Time.Hours==18)
+    // {
+    //     msg=WIFI::Tag_GetNTP;
+    //     xQueueSend(WIFI_Queue,&msg,0);
+    // }
+    // msg=WIFI::Tag_PowerOff;
+    // xQueueSend(WIFI_Queue,&msg,0);
+}
 void WIFI_Init(void)
 {
     UARTRXcplt=xSemaphoreCreateBinary();

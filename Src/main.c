@@ -179,7 +179,7 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 void TIM10_PeriodElapsedHandle(void);
 void UART2_Receive_CB(void);
-
+void RTC_Alarm_CB(void);
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if(huart->Instance == USART2)
@@ -187,6 +187,17 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		UART2_Receive_CB();
 	}
 }
+
+void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc)
+{
+  if(hrtc->Instance == RTC)
+  {
+    asm("NOP");
+    RTC_Alarm_CB();
+  }
+  
+}
+
 /* USER CODE END 4 */
 
  /**

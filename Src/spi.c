@@ -31,6 +31,13 @@ DMA_HandleTypeDef hdma_spi2_tx;
 void MX_SPI2_Init(void)
 {
 
+  /* USER CODE BEGIN SPI2_Init 0 */
+
+  /* USER CODE END SPI2_Init 0 */
+
+  /* USER CODE BEGIN SPI2_Init 1 */
+
+  /* USER CODE END SPI2_Init 1 */
   hspi2.Instance = SPI2;
   hspi2.Init.Mode = SPI_MODE_MASTER;
   hspi2.Init.Direction = SPI_DIRECTION_1LINE;
@@ -47,6 +54,9 @@ void MX_SPI2_Init(void)
   {
     Error_Handler();
   }
+  /* USER CODE BEGIN SPI2_Init 2 */
+
+  /* USER CODE END SPI2_Init 2 */
 
 }
 
@@ -94,7 +104,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* spiHandle)
     __HAL_LINKDMA(spiHandle,hdmatx,hdma_spi2_tx);
 
     /* SPI2 interrupt Init */
-    HAL_NVIC_SetPriority(SPI2_IRQn, 7, 0);
+    HAL_NVIC_SetPriority(SPI2_IRQn, 6, 0);
     HAL_NVIC_EnableIRQ(SPI2_IRQn);
   /* USER CODE BEGIN SPI2_MspInit 1 */
 

@@ -60,6 +60,7 @@ void TIM1_TRG_COM_TIM11_IRQHandler(void);
 void TIM3_IRQHandler(void);
 void SPI2_IRQHandler(void);
 void USART2_IRQHandler(void);
+void RTC_Alarm_IRQHandler(void);
 /* USER CODE BEGIN EFP */
 
 /* USER CODE END EFP */
