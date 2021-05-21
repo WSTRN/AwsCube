@@ -138,18 +138,11 @@ static void oled_drv_init()
     
   Write_Command(0xfd);	// command lock
   Write_Data(0x12);
+
   Write_Command(0xfd);	// command lock
   Write_Data(0xB1);
 
   Write_Command(0xae);	// display off
-  Write_Command(0xa4); 	// Normal Display mode
-
-  Write_Command(0x15);	//set column address
-  Write_Data(0x00);     //column address start 00
-  Write_Data(0x7f);     //column address end 95
-  Write_Command(0x75);	//set row address
-  Write_Data(0x00);     //row address start 00
-  Write_Data(0x7f);     //row address end 63	
 
   Write_Command(0xB3);
   Write_Data(0xF1);
@@ -157,49 +150,46 @@ static void oled_drv_init()
   Write_Command(0xCA);	
   Write_Data(0x7F);
 
+  Write_Command(0xa2);  //set display offset
+  Write_Data(0x00);
+
+  Write_Command(0xb5); 
+  Write_Data(0x01);
+
+  Write_Command(0xAB);	
+  Write_Command(0x01);
+
+  Write_Command(0xB1);	
+  Write_Data(0x32);
+
+  Write_Command(0xBE);
+  Write_Data(0x05);
+
+  Write_Command(0xA6);
+
+  Write_Command(0xC1);	
+  Write_Data(0xC8);	
+  Write_Data(0x80);
+  Write_Data(0xC8);
+
+  Write_Command(0xC7);	
+  Write_Data(0x0F);
+
+  Write_Command(0xB4);	
+  Write_Data(0xA0);	  
+  Write_Data(0xB5);  
+  Write_Data(0x55); 
+
+  Write_Command(0xB6);
+  Write_Data(0x01);
+
   Write_Command(0xa0);  //set re-map & data format
   Write_Data(0x76);     //Horizontal address increment
 
   Write_Command(0xa1);  //set display start line
   Write_Data(0x00);     //start 00 line
 
-  Write_Command(0xa2);  //set display offset
-  Write_Data(0x00);
-
-  Write_Command(0xAB);	
-  Write_Command(0x01);	
-
-  Write_Command(0xB4);	
-  Write_Data(0xA0);	  
-  Write_Data(0xB5);  
-  Write_Data(0x55);    
-
-  Write_Command(0xC1);	
-  Write_Data(0xC8);	
-  Write_Data(0x80);
-  Write_Data(0xC0);
-
-  Write_Command(0xC7);	
-  Write_Data(0x0F);
-
-  Write_Command(0xB1);	
-  Write_Data(0x32);
-
-  Write_Command(0xB2);	
-  Write_Data(0xA4);
-  Write_Data(0x00);
-  Write_Data(0x00);
-
-  Write_Command(0xBB);	
-  Write_Data(0x17);
-
-  Write_Command(0xB6);
-  Write_Data(0x01);
-
-  Write_Command(0xBE);
-  Write_Data(0x05);
-
-  Write_Command(0xA6);
+  
   Write_Command(0xaf);	 //display on
   
 }

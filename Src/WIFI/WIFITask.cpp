@@ -20,17 +20,7 @@ extern RTC_HandleTypeDef hrtc;
 
 
 void WIFITask(void const * argument)
-{
-    // esp8266.ExtPowerEnable(1);
-    // vTaskDelay(5000);
-    // while(!esp8266.CheckConnection())
-    // {
-    //     vTaskDelay(1000);
-    // }
-    // SEGGER_RTT_printf(0,"connected\r\n");
-    // esp8266.GetData(WIFI::Tag_GetNTP,NULL);
-
-    
+{   
     uint8_t WifiMsg=0xff;
     for(;;)
     {
@@ -83,30 +73,32 @@ void WIFITask(void const * argument)
         }
     }
 }
+
 extern"C" void RTC_Alarm_CB(void)
 {
     RTC_TimeTypeDef RTC_Time;
     uint8_t msg;
     HAL_RTC_GetTime(&hrtc,&RTC_Time,FORMAT_BIN);
-    SEGGER_RTT_printf(0,"Alarm time out \r\n");
-    // msg=WIFI::Tag_PowerOn;
-    // xQueueSend(WIFI_Queue,&msg,0);
-    // msg=WIFI::Tag_ConnectionStatus;
-    // xQueueSend(WIFI_Queue,&msg,0);
-    // msg=WIFI::Tag_GetWeather0;
-    // xQueueSend(WIFI_Queue,&msg,0);
-    // msg=WIFI::Tag_GetWeather1;
-    // xQueueSend(WIFI_Queue,&msg,0);
-    // msg=WIFI::Tag_GetWeather2;
-    // xQueueSend(WIFI_Queue,&msg,0);
-    // if(RTC_Time.Hours==6||RTC_Time.Hours==18)
-    // {
-    //     msg=WIFI::Tag_GetNTP;
-    //     xQueueSend(WIFI_Queue,&msg,0);
-    // }
-    // msg=WIFI::Tag_PowerOff;
-    // xQueueSend(WIFI_Queue,&msg,0);
+    SEGGER_RTT_printf(0,"Alarm! update data \r\n");
+    msg=WIFI::Tag_PowerOn;
+    xQueueSendFromISR(WIFI_Queue,&msg,NULL);
+    msg=WIFI::Tag_ConnectionStatus;
+    xQueueSendFromISR(WIFI_Queue,&msg,NULL);
+    msg=WIFI::Tag_GetWeather0;
+    xQueueSendFromISR(WIFI_Queue,&msg,NULL);
+    msg=WIFI::Tag_GetWeather1;
+    xQueueSendFromISR(WIFI_Queue,&msg,NULL);
+    msg=WIFI::Tag_GetWeather2;
+    xQueueSendFromISR(WIFI_Queue,&msg,NULL);
+    if(RTC_Time.Hours==6||RTC_Time.Hours==18)
+    {
+        msg=WIFI::Tag_GetNTP;
+        xQueueSendFromISR(WIFI_Queue,&msg,NULL);
+    }
+    msg=WIFI::Tag_PowerOff;
+    xQueueSendFromISR(WIFI_Queue,&msg,NULL);
 }
+
 void WIFI_Init(void)
 {
     UARTRXcplt=xSemaphoreCreateBinary();
