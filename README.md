@@ -1,6 +1,9 @@
 # AwsCube
 使用stm32f411+esp8226+ssd1351的伪全息桌面天气站  
 
+esp8266代码
+https://github.com/WSTRN/AwsCube_esp8266
+
 硬件
 https://oshwhub.com/WSTRN/deskclock
 https://oshwhub.com/WSTRN/awscube_esp8266
