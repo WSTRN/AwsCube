@@ -206,7 +206,7 @@ LDSCRIPT = STM32F411CEUx_FLASH.ld
 
 # libraries
 LIBS = -lc -lm -lnosys -larm_cortexM4lf_math
-LIBDIR = -LDrivers/CMSIS/LIB/GCC
+LIBDIR = -LDrivers/CMSIS/Lib/GCC
 LDFLAGS = $(MCU) -specs=nosys.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 
 # default action: build all
