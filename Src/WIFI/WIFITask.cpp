@@ -18,7 +18,15 @@ class WIFI esp8266;
 
 extern RTC_HandleTypeDef hrtc;
 
-
+int getWeek(int y, int m, int d)
+{
+	if(m==1||m==2) 
+	{
+		m+=12;
+		y--;
+	}
+	return (d+2*m+3*(m+1)/5+y+y/4-y/100+y/400)%7+1;
+}
 void WIFITask(void const * argument)
 {   
     uint8_t WifiMsg=0xff;
@@ -43,7 +51,7 @@ void WIFITask(void const * argument)
         {
             while(!esp8266.CheckConnection())
             {
-                vTaskDelay(1000);
+                vTaskDelay(500);
             }
         }
         else if(WifiMsg==WIFI::Tag_GetNTP)
@@ -62,14 +70,15 @@ void WIFITask(void const * argument)
             RTC_DateNow.Month = ntp.month;
             RTC_DateNow.Date = ntp.day;
             RTC_DateNow.Year = ntp.year;
-            RTC_DateNow.WeekDay=((5-40+RTC_Bcd2ToByte(ntp.year)+(RTC_Bcd2ToByte(ntp.year)/4)+((13*(RTC_Bcd2ToByte(ntp.month)+1))/5)+RTC_Bcd2ToByte(ntp.day)-1)%7);
-            if(RTC_DateNow.WeekDay==0) RTC_DateNow.WeekDay=7;
+            RTC_DateNow.WeekDay=getWeek(RTC_Bcd2ToByte(ntp.year),RTC_Bcd2ToByte(ntp.month),RTC_Bcd2ToByte(ntp.day));
+            //if(RTC_DateNow.WeekDay==0) RTC_DateNow.WeekDay=7;
             HAL_RTC_SetTime(&hrtc,&RTC_TimeNow,RTC_FORMAT_BCD);
             HAL_RTC_SetDate(&hrtc,&RTC_DateNow,RTC_FORMAT_BCD);
         }
         else
         {
-            esp8266.RequestData((WIFI::Tag)WifiMsg);
+   
+            while(!esp8266.RequestData((WIFI::Tag)WifiMsg));
         }
     }
 }

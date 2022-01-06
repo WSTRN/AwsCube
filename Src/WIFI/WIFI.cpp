@@ -67,12 +67,20 @@ bool WIFI::GetProcessRawData(Tag t)
 	{
 		return false;
 	}
+	if((tempdata[2]==0x55)&&(tempdata[3]==0x66)&&(tempdata[4]==0x5f)&&(tempdata[5]==0x66)&&(tempdata[6]==0x55)&&(tempdata[7]==0x00))
+	{
+		return false;
+	}
 	switch(t)
 	{
 	case Tag_ConnectionStatus:	
 		tempdata[4]==0x3f?Isconnected=true:Isconnected=false;
 		break;
 	case Tag_GetNTP:
+	if((tempdata[2]==0x55)&&(tempdata[3]==0x66)&&(tempdata[4]==0x5f)&&(tempdata[5]==0x66)&&(tempdata[6]==0x55)&&(tempdata[7]==0x00))
+	{
+		return false;
+	}
 		NTP.sec   = tempdata[7];
 		NTP.min   = tempdata[6];
 		NTP.hour  = tempdata[5];
@@ -81,6 +89,10 @@ bool WIFI::GetProcessRawData(Tag t)
 		NTP.year  = tempdata[2];
 		break;
 	case Tag_GetWeather0:
+	if((tempdata[2]==0x55)&&(tempdata[3]==0x66)&&(tempdata[4]==0x5f)&&(tempdata[5]==0x66)&&(tempdata[6]==0x55)&&(tempdata[7]==0x00))
+	{
+		return false;
+	}
 		WeatherData[0].code_day   = tempdata[2];
 		WeatherData[0].code_night = tempdata[3];
 		WeatherData[0].high       = tempdata[4];
@@ -89,6 +101,10 @@ bool WIFI::GetProcessRawData(Tag t)
 		WeatherData[0].wind_scale   = tempdata[7];
 		break;
 	case Tag_GetWeather1:
+	if((tempdata[2]==0x55)&&(tempdata[3]==0x66)&&(tempdata[4]==0x5f)&&(tempdata[5]==0x66)&&(tempdata[6]==0x55)&&(tempdata[7]==0x00))
+	{
+		return false;
+	}
 		WeatherData[1].code_day   = tempdata[2];
 		WeatherData[1].code_night = tempdata[3];
 		WeatherData[1].high       = tempdata[4];
@@ -97,6 +113,10 @@ bool WIFI::GetProcessRawData(Tag t)
 		WeatherData[1].wind_scale   = tempdata[7];
 		break;
 	case Tag_GetWeather2:
+	if((tempdata[2]==0x55)&&(tempdata[3]==0x66)&&(tempdata[4]==0x5f)&&(tempdata[5]==0x66)&&(tempdata[6]==0x55)&&(tempdata[7]==0x00))
+	{
+		return false;
+	}
 		WeatherData[2].code_day   = tempdata[2];
 		WeatherData[2].code_night = tempdata[3];
 		WeatherData[2].high       = tempdata[4];
