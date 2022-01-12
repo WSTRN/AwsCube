@@ -157,6 +157,7 @@ AS_INCLUDES =  \
 
 # C includes
 C_INCLUDES =  \
+-I/usr/lib/arm-none-eabi/include \
 -IInc \
 -IDrivers/STM32F4xx_HAL_Driver/Inc \
 -IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy \
